@@ -1,0 +1,55 @@
+@if (store.loading()) {
+  <p>{{ 'shared.loading' | translate }}</p>
+}
+@if (store.error(); as err) {
+  <p class="error">{{ err }}</p>
+}
+
+@if (user(); as currentUser) {
+  <header class="page-header">
+    <h2>{{ 'profile.title' | translate }}</h2>
+  </header>
+
+  <section class="profile-card">
+    <div class="avatar">{{ currentUser.fullName.slice(0, 1) }}</div>
+    <div class="profile-info">
+      <p class="eyebrow">{{ 'auth.eyebrow' | translate }}</p>
+      <h2>{{ currentUser.fullName }}</h2>
+      <p class="meta">{{ 'profile.safeStepUser' | translate }}</p>
+      <span class="email">{{ currentUser.email }}</span>
+    </div>
+  </section>
+
+  <section class="settings-grid">
+    <article>
+      <h3>{{ 'profile.learningPreferences' | translate }}</h3>
+      <label class="setting-row">
+        <span>{{ 'profile.dailyReminders' | translate }}</span>
+        <input type="checkbox" checked />
+      </label>
+      <label class="setting-row">
+        <span>{{ 'profile.productRecommendations' | translate }}</span>
+        <input type="checkbox" checked />
+      </label>
+      <label class="setting-row">
+        <span>{{ 'profile.shareAchievements' | translate }}</span>
+        <input type="checkbox" checked />
+      </label>
+    </article>
+    <article>
+      <h3>{{ 'profile.security' | translate }}</h3>
+      <label class="setting-row">
+        <span>{{ 'profile.persistentSession' | translate }}</span>
+        <input type="checkbox" checked />
+      </label>
+      <label class="setting-row">
+        <span>{{ 'profile.emailVerification' | translate }}</span>
+        <input type="checkbox" checked />
+      </label>
+      <label class="setting-row">
+        <span>{{ 'profile.suspiciousActivityAlerts' | translate }}</span>
+        <input type="checkbox" />
+      </label>
+    </article>
+  </section>
+}

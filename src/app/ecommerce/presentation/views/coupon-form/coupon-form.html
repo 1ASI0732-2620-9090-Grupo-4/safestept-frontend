@@ -1,0 +1,40 @@
+<section>
+  <a routerLink="/app/store/admin/coupons" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'admin.back' | translate }}
+  </a>
+
+  <h1>{{ (editMode ? 'admin.coupons.edit' : 'admin.coupons.add') | translate }}</h1>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="model.id" [disabled]="editMode" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.coupons.title' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.title" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.coupons.discount' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.discount" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.coupons.costCoins' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.costCoins" required />
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="save()">
+        <mat-icon>save</mat-icon>
+        {{ 'admin.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</section>

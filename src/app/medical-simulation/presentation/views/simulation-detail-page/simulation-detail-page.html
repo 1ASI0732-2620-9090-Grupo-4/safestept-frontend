@@ -1,0 +1,207 @@
+@if (medicalSimulationStore.loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (medicalSimulationStore.error(); as err) {
+  <div class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ err }}</p>
+  </div>
+}
+
+@if (simulation(); as current) {
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/app/simulations">{{ 'simulationDetail.simulations' | translate }}</a>
+    <span>/</span>
+    <span>{{ current.title }}</span>
+  </nav>
+
+  <!-- Detail Head -->
+  <section class="detail-head">
+    <div>
+      <p class="eyebrow">{{ current.emergencyType }}</p>
+      <h2>{{ current.title }}</h2>
+      <p>{{ current.description }}</p>
+    </div>
+    <aside class="meta-card">
+      <div class="meta-item">
+        <mat-icon>bolt</mat-icon>
+        <strong>{{ current.xpReward }} XP</strong>
+        <span>{{ current.coinReward }} {{ 'simulationDetail.safeCoins' | translate }}</span>
+      </div>
+      <div class="meta-divider"></div>
+      <div class="meta-item">
+        <mat-icon>schedule</mat-icon>
+        <strong>{{ current.durationMinutes }}</strong>
+        <span>{{ 'simulationDetail.estimatedMinutes' | translate }}</span>
+      </div>
+      <div class="meta-divider"></div>
+      <div class="meta-item">
+        <mat-icon>signal_cellular_alt</mat-icon>
+        <strong>{{ current.difficulty }}</strong>
+        <span>{{ 'simulationDetail.difficulty' | translate }}</span>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Learning Goals -->
+  @if (current.learningGoals.length > 0) {
+    <section class="learning-goals">
+      <h3>{{ 'simulationDetail.learningGoals' | translate }}</h3>
+      <div class="goals-list">
+        @for (goal of current.learningGoals; track goal) {
+          <div class="goal-item">
+            <mat-icon>check_circle</mat-icon>
+            <span>{{ goal }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (!completed()) {
+    <!-- Steps -->
+    <section class="step-list">
+      @for (step of current.steps; track step.id; let index = $index) {
+        <article class="step-card">
+          <div class="step-header">
+            <span class="step-number">{{ 'simulationDetail.module' | translate }} {{ index + 1 }}</span>
+          </div>
+          <h3>{{ step.prompt }}</h3>
+          <div class="options">
+            @for (option of step.options; track option.id) {
+              <button
+                type="button"
+                [class]="optionClass(step.id, option.id, step.correctOptionId)"
+                (click)="selectOption(step.id, option.id)"
+              >
+                <span class="option-label">{{ option.label }}</span>
+                @if (selectedOptions()[step.id] === option.id && option.feedback) {
+                  <span class="option-feedback">{{ option.feedback }}</span>
+                }
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </section>
+
+    @if (rewardError(); as message) {
+      <div class="reward-error">
+        <mat-icon>error</mat-icon>
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    <div class="finish-area">
+      <span class="body-sm">{{ answeredCount() }} / {{ current.steps.length }} {{ 'simulationDetail.module' | translate | lowercase }}</span>
+      <button
+        class="btn btn-primary"
+        type="button"
+        [disabled]="!allAnswered() || savingReward()"
+        (click)="finish()"
+      >
+        @if (savingReward()) {
+          <mat-icon class="spin">sync</mat-icon> {{ 'simulationDetail.saving' | translate }}
+        } @else {
+          {{ 'simulationDetail.finish' | translate }}
+        }
+      </button>
+    </div>
+  } @else {
+    <!-- Result Panel -->
+    <section class="result-panel">
+      <div class="result-hero">
+        <div class="score-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--safe-gray-100)" stroke-width="8" />
+            <circle
+              cx="60" cy="60" r="52" fill="none"
+              stroke="var(--safe-green)" stroke-width="8"
+              stroke-linecap="round"
+              [style.stroke-dasharray]="(2 * Math.PI * 52) + ' ' + (2 * Math.PI * 52)"
+              [style.stroke-dashoffset]="(2 * Math.PI * 52) * (1 - accuracy())"
+              transform="rotate(-90, 60, 60)"
+            />
+          </svg>
+          <div class="score-inner">
+            <strong>{{ accuracyPercent() }}%</strong>
+            <span>{{ 'simulationDetail.accuracy' | translate }}</span>
+          </div>
+        </div>
+        <div class="result-stats">
+          <div class="result-stat">
+            <span class="stat-label">{{ 'simulationDetail.score' | translate }}</span>
+            <strong class="stat-value">{{ score() }} / {{ current.steps.length }}</strong>
+          </div>
+          <div class="result-stat">
+            <span class="stat-label">{{ 'simulationDetail.xpEarned' | translate }}</span>
+            <strong class="stat-value" style="color:var(--safe-warning);">+{{ earnedXp() }}</strong>
+          </div>
+          <div class="result-stat">
+            <span class="stat-label">{{ 'simulationDetail.errorsMade' | translate }}</span>
+            <strong class="stat-value" style="color:var(--safe-danger);">{{ current.steps.length - score() }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coin Reward -->
+      <div class="coin-reward">
+        <div class="coin-info">
+          <p class="eyebrow">{{ 'simulationDetail.safeCoins' | translate }}</p>
+          <h4>{{ 'simulationDetail.rewardApplied' | translate }}</h4>
+          <p>{{ 'simulationDetail.rewardDescription' | translate: { coins: current.coinReward, multiplier: appliedMultiplier(), attempt: successfulAttemptNumber() } }}</p>
+        </div>
+        <div class="coin-flow">
+          <div class="coin-step">
+            <span class="label">{{ 'simulationDetail.previousBalance' | translate }}</span>
+            <strong>{{ previousBalance() }}</strong>
+          </div>
+          <mat-icon class="coin-arrow">arrow_forward</mat-icon>
+          <div class="coin-step earned">
+            <span class="label">{{ 'simulationDetail.earned' | translate }}</span>
+            <strong>+{{ earnedCoins() }}</strong>
+          </div>
+          <mat-icon class="coin-arrow">arrow_forward</mat-icon>
+          <div class="coin-step">
+            <span class="label">{{ 'simulationDetail.newBalance' | translate }}</span>
+            <strong>{{ newBalance() }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Suggestions -->
+      <h4 style="font-family:var(--font-display);font-weight:600;font-size:1.125rem;margin-bottom:var(--space-4);">
+        {{ 'simulationDetail.productSuggestions' | translate }}
+      </h4>
+      <div class="product-grid">
+        @for (product of products(); track product.id) {
+          <mat-card appearance="outlined" class="product-card card-hover">
+            <div class="product-media" [style.background-image]="'linear-gradient(135deg, rgba(14,165,233,.16), rgba(34,197,94,.18)), url(' + product.imageUrl + ')'"></div>
+            <mat-card-content>
+              <span class="chip chip-blue">{{ product.category }}</span>
+              <h5>{{ product.name }}</h5>
+              <div class="product-footer">
+                <strong class="product-price">S/ {{ product.price }}</strong>
+                <button class="btn btn-primary" style="padding:var(--space-1) var(--space-3);font-size:0.75rem;min-height:36px;">
+                  <mat-icon style="font-size:1rem;">shopping_cart</mat-icon> {{ 'simulationDetail.addToCart' | translate }}
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <a class="btn btn-secondary" routerLink="/app/simulations" style="margin-top:var(--space-4);justify-content:center;">
+        <mat-icon>arrow_back</mat-icon> {{ 'simulationDetail.back' | translate }}
+      </a>
+    </section>
+  }
+} @else {
+  <section class="empty-state">
+    <mat-icon>search_off</mat-icon>
+    <h2>{{ 'simulationDetail.notFound' | translate }}</h2>
+    <a class="btn btn-primary" routerLink="/app/simulations">{{ 'simulationDetail.availableSimulations' | translate }}</a>
+  </section>
+}

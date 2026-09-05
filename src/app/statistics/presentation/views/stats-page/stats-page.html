@@ -1,0 +1,168 @@
+@if (!loading() && !error()) {
+  <section class="stats-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">{{ 'stats.realProgress' | translate }}</span>
+      <h1 class="display">{{ 'stats.analyticsTitle' | translate }}</h1>
+      <p>{{ 'stats.analyticsDescription' | translate }}</p>
+    </div>
+
+    <aside class="score-card">
+      <span class="score-ring">
+        <strong>{{ averageAccuracy() }}%</strong>
+        <small>{{ 'stats.averageAccuracy' | translate }}</small>
+      </span>
+      <div class="score-meta">
+        <strong>{{ completedSimulations() }} / {{ simulations().length }}</strong>
+        <span>{{ 'stats.simulationsCompleted' | translate }}</span>
+      </div>
+    </aside>
+  </section>
+
+  <section class="summary-grid">
+    <mat-card class="summary-card card-hover" appearance="outlined">
+      <mat-card-content>
+        <mat-icon>fact_check</mat-icon>
+        <span class="label">{{ 'stats.attemptsMade' | translate }}</span>
+        <strong>{{ totalAttempts() }}</strong>
+        <small>{{ completedSimulations() }} {{ 'stats.successfulCompletions' | translate }}</small>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card card-hover" appearance="outlined">
+      <mat-card-content>
+        <mat-icon>bolt</mat-icon>
+        <span class="label">{{ 'stats.estimatedXp' | translate }}</span>
+        <strong>{{ totalXp() }}</strong>
+        <small>{{ 'stats.xpFromSimulations' | translate }}</small>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card card-hover" appearance="outlined">
+      <mat-card-content>
+        <mat-icon>paid</mat-icon>
+        <span class="label">{{ 'stats.coinsEarned' | translate }}</span>
+        <strong>{{ totalCoins() }}</strong>
+        <small>{{ 'stats.coinsFromGamification' | translate }}</small>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="summary-card card-hover" appearance="outlined">
+      <mat-card-content>
+        <mat-icon>timer</mat-icon>
+        <span class="label">{{ 'stats.timeTrained' | translate }}</span>
+        <strong>{{ trainedMinutes() }} min</strong>
+        <small>{{ 'stats.estimatedDuration' | translate }}</small>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <mat-card class="panel" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ 'stats.simulationPerformance' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'stats.performanceSubtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <div class="simulation-performance-grid">
+      @for (item of performanceBySimulation(); track item.simulation.id) {
+        <article class="simulation-performance-card" [class.pending]="item.completions === 0">
+          <div class="perf-head">
+            <strong>{{ item.simulation.title }}</strong>
+            <span class="chip chip-blue">{{ item.simulation.emergencyType }}</span>
+          </div>
+          <span class="perf-difficulty">{{ item.simulation.difficulty }}</span>
+          <div class="mini-metrics">
+            <div class="metric">
+              <span class="metric-value">{{ item.completions }}</span>
+              <span class="metric-label">{{ 'stats.completedLabel' | translate }}</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">{{ item.attempts }}</span>
+              <span class="metric-label">{{ 'stats.attemptsLabel' | translate }}</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">{{ item.bestScore }}%</span>
+              <span class="metric-label">{{ 'stats.bestLabel' | translate }}</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">{{ item.averageAccuracy }}%</span>
+              <span class="metric-label">{{ 'stats.averageLabel' | translate }}</span>
+            </div>
+          </div>
+          <div class="progress-track">
+            <i [style.width.%]="item.completions ? 100 : item.simulation.completion"></i>
+          </div>
+          <small class="perf-last">{{ 'stats.lastAttempt' | translate: { date: formatDate(item.lastAttempt) } }}</small>
+        </article>
+      }
+    </div>
+  </mat-card>
+
+  <section class="analytics-grid extra-analytics">
+    <mat-card class="panel" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ 'stats.errorsAndWeaknesses' | translate }}</mat-card-title>
+        <mat-card-subtitle>{{ 'stats.errorsFromAttempts' | translate }}</mat-card-subtitle>
+      </mat-card-header>
+      <div class="mistake-grid">
+        @for (mistake of commonMistakes(); track mistake.topic) {
+          <article class="mistake-card">
+            <mat-icon>report_problem</mat-icon>
+            <strong>{{ mistake.topic }}</strong>
+            <span>{{ mistake.count }} {{ 'stats.errorsCount' | translate }}</span>
+            <p>{{ mistake.recommendation }}</p>
+          </article>
+        } @empty {
+          <article class="mistake-card">
+            <mat-icon>verified</mat-icon>
+            <strong>{{ 'stats.noErrors' | translate }}</strong>
+            <span>{{ 'stats.noErrorsCount' | translate }}</span>
+            <p>{{ 'stats.noErrorsDescription' | translate }}</p>
+          </article>
+        }
+      </div>
+    </mat-card>
+
+    <mat-card class="panel" appearance="outlined">
+       <mat-card-header>
+         <mat-card-title>{{ 'stats.gamificationProgress' | translate }}</mat-card-title>
+         <mat-card-subtitle>{{ 'stats.gamificationSubtitle' | translate }}</mat-card-subtitle>
+       </mat-card-header>
+       <div class="type-list gamification-list">
+         <article class="type-card">
+           <strong>{{ missions().length }}</strong>
+           <span>{{ 'stats.totalMissions' | translate: { completed: completedMissions() } }}</span>
+         </article>
+         <article class="type-card">
+           <strong>{{ unlockedBadges() }} / {{ badges().length }}</strong>
+           <span>{{ 'stats.badgesUnlocked' | translate }}</span>
+         </article>
+         <article class="type-card">
+           <strong>#1</strong>
+           <span>{{ 'stats.weeklyPosition' | translate }}</span>
+         </article>
+         <article class="type-card">
+           <strong>{{ totalCoins() }}</strong>
+           <span>{{ 'stats.coinsFromSimulations' | translate }}</span>
+         </article>
+        </div>
+     </mat-card>
+   </section>
+
+   <mat-card class="panel" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ 'stats.actionRecommendations' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'stats.recommendationsSubtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <div class="recommendation-grid">
+      @for (recommendation of actionRecommendations(); track recommendation.title) {
+        <article class="recommendation-card card-hover">
+          <mat-icon>{{ recommendation.icon }}</mat-icon>
+          <strong>{{ recommendation.title }}</strong>
+          <p>{{ recommendation.detail }}</p>
+        </article>
+      }
+    </div>
+  </mat-card>
+}
+@if (loading()) {
+  <p>{{ 'shared.loading' | translate }}</p>
+}
+@if (error(); as err) {
+  <p class="error">{{ err }}</p>
+}

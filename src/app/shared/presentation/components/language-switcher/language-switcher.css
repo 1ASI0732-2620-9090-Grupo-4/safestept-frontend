@@ -1,0 +1,12 @@
+.language-switcher {
+  height: 40px;
+  margin-left: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.mat-button-toggle-button {
+  height: 40px;
+  font-weight: 900;
+}

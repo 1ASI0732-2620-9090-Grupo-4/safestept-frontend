@@ -1,0 +1,365 @@
+@startuml
+title SafeStep Web App - Diagrama de Clases
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+' ============================================================
+' IDENTIDAD Y ACCESO
+' ============================================================
+package "Identidad y Acceso" as identity {
+  package "domain" {
+    class Usuario {
+      + id
+      + nombre
+      + email
+      + nivel
+      + safeCoins
+      + rachaActual
+    }
+
+    class Notificacion {
+      + id
+      + titulo
+      + estado
+    }
+  }
+
+  package "application" {
+    class IdentityAccessStore {
+      + obtenerUsuario()
+      + actualizarSafeCoins()
+    }
+  }
+
+  package "infrastructure" {
+    class IdentityAccessApi {
+      + getIdentity()
+      + patchIdentity()
+    }
+  }
+
+  package "presentation" {
+    class AuthPage
+    class ProfilePage
+  }
+}
+
+' ============================================================
+' SIMULACION MEDICA
+' ============================================================
+package "Simulacion Medica" as simulation {
+  package "domain" {
+    class Simulacion {
+      + id
+      + titulo
+      + categoria
+      + dificultad
+      + duracion
+      + xpReward
+      + coinReward
+    }
+
+    class PasoSimulacion {
+      + id
+      + escenario
+      + pregunta
+    }
+
+    class OpcionDecision {
+      + id
+      + texto
+      + esCorrecta
+    }
+
+    class IntentoSimulacion {
+      + id
+      + usuarioId
+      + simulacionId
+      + precision
+      + xpGanado
+      + completadoEn
+    }
+  }
+
+  package "application" {
+    class MedicalSimulationStore {
+      + listarSimulaciones()
+      + obtenerIntentos()
+      + registrarIntento()
+    }
+  }
+
+  package "infrastructure" {
+    class MedicalSimulationApi {
+      + getSimulations()
+      + postAttempt()
+    }
+  }
+
+  package "presentation" {
+    class SimulationsPage
+    class SimulationDetailPage
+  }
+}
+
+' ============================================================
+' GAMIFICACION
+' ============================================================
+package "Gamificacion" as gamification {
+  package "domain" {
+    class Mision {
+      + id
+      + titulo
+      + estado
+      + recompensaXP
+      + recompensaCoins
+      + requisito
+    }
+
+    class Insignia {
+      + id
+      + nombre
+      + rareza
+      + desbloqueada
+      + requisito
+    }
+
+    class RankingUsuario {
+      + posicion
+      + usuario
+      + xp
+      + nivel
+    }
+
+    class TransaccionMonedas {
+      + id
+      + usuarioId
+      + simulacionId
+      + monedasGanadas
+      + saldoAnterior
+      + saldoNuevo
+      + fecha
+    }
+  }
+
+  package "application" {
+    class GamificationStore {
+      + obtenerMisiones()
+      + obtenerInsignias()
+      + obtenerRanking()
+      + registrarTransaccion()
+    }
+  }
+
+  package "infrastructure" {
+    class GamificationApi {
+      + getGamification()
+      + patchGamification()
+    }
+  }
+
+  package "presentation" {
+    class GamificationPage
+  }
+}
+
+' ============================================================
+' ECOMMERCE
+' ============================================================
+package "Ecommerce" as ecommerce {
+  package "domain" {
+    class Producto {
+      + id
+      + nombre
+      + categoria
+      + precio
+      + stock
+      + imagen
+    }
+
+    class KitEmergencia {
+      + id
+      + nombre
+      + nivel
+      + precio
+    }
+
+    class Cupon {
+      + id
+      + titulo
+      + costoCoins
+      + descuento
+    }
+
+    class ItemCarrito {
+      + productoId
+      + cantidad
+      + subtotal
+    }
+
+    class OrdenCompra {
+      + id
+      + usuarioId
+      + total
+      + estado
+      + fecha
+    }
+
+    class ResenaProducto {
+      + id
+      + productoId
+      + calificacion
+      + comentario
+    }
+  }
+
+  package "application" {
+    class EcommerceStore {
+      + listarProductos()
+      + agregarAlCarrito()
+      + actualizarCantidad()
+      + registrarCompra()
+    }
+  }
+
+  package "infrastructure" {
+    class EcommerceApi {
+      + getEcommerce()
+      + patchEcommerce()
+    }
+  }
+
+  package "presentation" {
+    class StorePage
+  }
+}
+
+' ============================================================
+' ESTADISTICAS
+' ============================================================
+package "Estadisticas" as statistics {
+  package "domain" {
+    class ResumenProgreso {
+      + simulacionesCompletadas
+      + intentosTotales
+      + precisionPromedio
+      + xpTotal
+      + coinsGanadas
+    }
+
+    class RendimientoSimulacion {
+      + simulacion
+      + intentos
+      + mejorPrecision
+      + ultimaFecha
+    }
+
+    class RecomendacionProgreso {
+      + titulo
+      + descripcion
+      + prioridad
+    }
+  }
+
+  package "application" {
+    class StatisticsStore {
+      + calcularResumen()
+      + calcularRendimiento()
+      + generarRecomendaciones()
+    }
+  }
+
+  package "infrastructure" {
+    class StatisticsApi {
+      + getStatistics()
+    }
+  }
+
+  package "presentation" {
+    class StatsPage
+  }
+}
+
+' ============================================================
+' SHARED
+' ============================================================
+package "Shared" as shared {
+  package "application" {
+    class SafeCoinsWalletStore {
+      + saldoActual
+      + refrescarSaldo()
+    }
+  }
+
+  package "infrastructure" {
+    abstract class BaseApi
+  }
+
+  package "presentation" {
+    class AppShell
+    class DashboardPage
+    class LanguageSwitcher
+  }
+}
+
+' ============================================================
+' RELACIONES PRINCIPALES
+' ============================================================
+Usuario "1" -- "0..*" IntentoSimulacion : realiza
+Usuario "1" -- "0..*" TransaccionMonedas : recibe
+Usuario "1" -- "0..*" OrdenCompra : compra
+Usuario "1" -- "0..*" ItemCarrito : agrega
+Usuario "1" -- "0..*" Notificacion : recibe
+
+Simulacion "1" *-- "1..*" PasoSimulacion : contiene
+PasoSimulacion "1" *-- "2..*" OpcionDecision : ofrece
+Simulacion "1" -- "0..*" IntentoSimulacion : registra
+Simulacion "1" -- "0..*" TransaccionMonedas : recompensa
+
+Producto "1" -- "0..*" ResenaProducto : tiene
+Producto "1" -- "0..*" ItemCarrito : se agrega como
+OrdenCompra "1" *-- "1..*" ItemCarrito : incluye
+KitEmergencia --|> Producto
+Cupon ..> Usuario : se canjea con SafeCoins
+
+IntentoSimulacion ..> ResumenProgreso : alimenta
+IntentoSimulacion ..> RendimientoSimulacion : alimenta
+TransaccionMonedas ..> ResumenProgreso : alimenta
+Mision ..> RecomendacionProgreso : puede generar
+Insignia ..> RecomendacionProgreso : puede generar
+
+SimulationDetailPage ..> MedicalSimulationStore
+SimulationDetailPage ..> GamificationStore
+SimulationDetailPage ..> IdentityAccessStore
+SimulationDetailPage ..> SafeCoinsWalletStore
+
+StorePage ..> EcommerceStore
+StorePage ..> IdentityAccessStore
+StorePage ..> SafeCoinsWalletStore
+
+StatsPage ..> StatisticsStore
+StatsPage ..> MedicalSimulationStore
+StatsPage ..> GamificationStore
+
+DashboardPage ..> MedicalSimulationStore
+DashboardPage ..> GamificationStore
+DashboardPage ..> EcommerceStore
+AppShell ..> IdentityAccessStore
+AppShell ..> SafeCoinsWalletStore
+
+IdentityAccessStore ..> IdentityAccessApi
+MedicalSimulationStore ..> MedicalSimulationApi
+GamificationStore ..> GamificationApi
+EcommerceStore ..> EcommerceApi
+StatisticsStore ..> StatisticsApi
+
+IdentityAccessApi --|> BaseApi
+MedicalSimulationApi --|> BaseApi
+GamificationApi --|> BaseApi
+EcommerceApi --|> BaseApi
+StatisticsApi --|> BaseApi
+
+@enduml

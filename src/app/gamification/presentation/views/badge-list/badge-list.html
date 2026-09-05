@@ -1,0 +1,54 @@
+<section>
+  <header>
+    <h1>{{ 'admin.badges.title' | translate }}</h1>
+    <a mat-raised-button color="primary" routerLink="/app/gamification/admin/badges/new">
+      <mat-icon>add</mat-icon>
+      {{ 'admin.badges.add' | translate }}
+    </a>
+  </header>
+
+  <mat-card>
+    <table mat-table [dataSource]="store.badges()">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.badges.name' | translate }}</th>
+        <td mat-cell *matCellDef="let badge">{{ badge.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rarity">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.badges.rarity' | translate }}</th>
+        <td mat-cell *matCellDef="let badge">
+          <mat-chip>{{ badge.rarity }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="unlocked">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.badges.unlocked' | translate }}</th>
+        <td mat-cell *matCellDef="let badge">
+          <mat-icon [color]="badge.unlocked ? 'primary' : 'warn'">
+            {{ badge.unlocked ? 'check_circle' : 'cancel' }}
+          </mat-icon>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.badges.description' | translate }}</th>
+        <td mat-cell *matCellDef="let badge">{{ badge.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.actions' | translate }}</th>
+        <td mat-cell *matCellDef="let badge">
+          <a mat-icon-button [routerLink]="'/app/gamification/admin/badges/edit/' + badge.id" matTooltip="{{ 'admin.edit' | translate }}">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button color="warn" (click)="store.deleteBadge(badge.id)" matTooltip="{{ 'admin.delete' | translate }}">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card>
+</section>

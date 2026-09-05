@@ -1,0 +1,72 @@
+<section>
+  <a routerLink="/app/gamification/admin/missions" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'admin.back' | translate }}
+  </a>
+
+  <h1>{{ (editMode ? 'admin.missions.edit' : 'admin.missions.add') | translate }}</h1>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="model.id" [disabled]="editMode" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.title' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.title" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.cadence' | translate }}</mat-label>
+          <mat-select [(ngModel)]="model.cadence">
+            <mat-option value="Diaria">{{ 'admin.missions.daily' | translate }}</mat-option>
+            <mat-option value="Semanal">{{ 'admin.missions.weekly' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.status' | translate }}</mat-label>
+          <mat-select [(ngModel)]="model.status">
+            <mat-option value="Activa">{{ 'admin.missions.active' | translate }}</mat-option>
+            <mat-option value="Disponible">{{ 'admin.missions.available' | translate }}</mat-option>
+            <mat-option value="Bloqueada">{{ 'admin.missions.locked' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.goal' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.goal" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.rewardXp' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.rewardXp" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.rewardCoins' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.rewardCoins" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'admin.missions.instructions' | translate }}</mat-label>
+          <textarea matInput [(ngModel)]="model.instructions" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.missions.unlockRequirement' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.unlockRequirement" />
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="save()">
+        <mat-icon>save</mat-icon>
+        {{ 'admin.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</section>

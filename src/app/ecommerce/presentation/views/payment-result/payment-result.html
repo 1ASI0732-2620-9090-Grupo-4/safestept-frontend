@@ -1,0 +1,28 @@
+<section class="payment-result">
+  <mat-card appearance="outlined">
+    <mat-card-content>
+      <mat-icon [class.success]="isSuccess()" [class.cancel]="!isSuccess()">
+        {{ isSuccess() ? 'check_circle' : 'cancel' }}
+      </mat-icon>
+      <h1>{{ isSuccess() ? 'Pago recibido' : 'Pago cancelado' }}</h1>
+      <p>
+        {{
+          isSuccess()
+            ? 'Stripe recibio el pago. La orden se actualizara cuando el webhook confirme la transaccion.'
+            : 'No se realizo ningun cargo. Puedes volver a la tienda e intentarlo nuevamente.'
+        }}
+      </p>
+      <div class="actions">
+        <a mat-flat-button color="primary" routerLink="/app/store">
+          <mat-icon>shopping_bag</mat-icon>
+          Volver a tienda
+        </a>
+        <a mat-stroked-button routerLink="/app/store" [queryParams]="{ history: true }">
+          <mat-icon>receipt_long</mat-icon>
+          Ver ordenes
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>
+

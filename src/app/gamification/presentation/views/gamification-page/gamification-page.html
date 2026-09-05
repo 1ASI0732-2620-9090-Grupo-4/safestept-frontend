@@ -1,0 +1,281 @@
+@if (store.loading()) {
+  <p>{{ 'shared.loading' | translate }}</p>
+}
+@if (store.error(); as err) {
+  <p class="error">{{ err }}</p>
+}
+
+<section class="game-hero">
+  <div class="hero-copy">
+    <span class="chip chip-blue">{{ 'nav.gamification' | translate }}</span>
+    <h2>{{ 'gamification.title' | translate }}</h2>
+    <p>{{ 'gamification.description' | translate }}</p>
+    <div class="hero-stats">
+      <span>
+        <strong>#{{ currentUserRank }}</strong>
+        {{ 'gamification.weeklyRank' | translate }}
+      </span>
+      <span>
+        <strong>{{ currentUserCoins }}</strong>
+        SafeCoins
+      </span>
+      <span>
+        <strong>{{ currentUserStreak }}</strong>
+        {{ 'gamification.streakDays' | translate }}
+      </span>
+    </div>
+  </div>
+
+  <aside class="level-card">
+    <span class="level-orb">
+      <strong>{{ currentUserLevel }}</strong>
+      <small>{{ 'shell.level' | translate }}</small>
+    </span>
+    <mat-progress-bar mode="determinate" [value]="nextLevelXp > 0 ? (currentUserXp / nextLevelXp) * 100 : 0" />
+    <p>{{ currentUserXp }} / {{ nextLevelXp }} XP</p>
+  </aside>
+
+  <div class="admin-actions">
+    <a mat-mini-fab routerLink="/app/gamification/admin/missions" color="primary" matTooltip="{{ 'admin.missions.title' | translate }}">
+      <mat-icon>flag</mat-icon>
+    </a>
+    <a mat-mini-fab routerLink="/app/gamification/admin/badges" color="primary" matTooltip="{{ 'admin.badges.title' | translate }}">
+      <mat-icon>workspace_premium</mat-icon>
+    </a>
+  </div>
+</section>
+
+<section class="reward-grid">
+  <mat-card class="reward-card card-hover">
+    <mat-card-content>
+      <mat-icon>local_fire_department</mat-icon>
+      <span>{{ 'gamification.currentStreak' | translate }}</span>
+      <strong>{{ currentUserStreak }} {{ 'shared.days' | translate }}</strong>
+      <small>{{ 'gamification.dailyBonus' | translate }}</small>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="reward-card card-hover">
+    <mat-card-content>
+      <mat-icon>paid</mat-icon>
+      <span>{{ 'gamification.availableCoins' | translate }}</span>
+      <strong>{{ currentUserCoins }}</strong>
+      <small>{{ 'gamification.redeemableCoupons' | translate }}</small>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="reward-card card-hover">
+    <mat-card-content>
+      <mat-icon>workspace_premium</mat-icon>
+      <span>{{ 'gamification.badges' | translate }}</span>
+      <strong>{{ store.badgeCount() }}</strong>
+      <small>{{ 'gamification.trainingAchievements' | translate }}</small>
+    </mat-card-content>
+  </mat-card>
+</section>
+
+<section class="content-grid">
+  <mat-card class="panel">
+    <mat-card-header>
+      <mat-card-title>{{ 'dashboard.activeMissions' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'gamification.missionsSubtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="mission-list">
+      @for (mission of store.getMissionPreview(3); track mission.id) {
+        <article class="mission-card mission-active">
+          <div class="mission-head">
+            <span>
+              <strong>{{ mission.title }}</strong>
+              <small>{{ mission.rewardXp }} XP - {{ mission.rewardCoins }} SafeCoins</small>
+            </span>
+            <span class="chip chip-blue">{{ mission.cadence }}</span>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="store.getMissionProgress(mission)" />
+          <small>{{ mission.progress }} / {{ mission.goal }} {{ 'stats.completed' | translate }}</small>
+        </article>
+      }
+      <button mat-stroked-button type="button" class="panel-action" (click)="openMissionInventory()">
+        <mat-icon>fact_check</mat-icon>
+        {{ 'gamification.viewAllMissions' | translate }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="panel ranking-panel">
+    <mat-card-header>
+      <mat-card-title>{{ 'gamification.weeklyRanking' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'gamification.healthyCompetition' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-list>
+      @for (entry of store.getTopRanking(5); track entry.rank) {
+        <mat-list-item [class.current]="entry.name === currentUserFullName">
+          <span class="rank-badge" matListItemIcon>{{ entry.rank }}</span>
+          <span matListItemTitle>{{ entry.name }}</span>
+          <span matListItemLine>{{ entry.xp }} XP - {{ entry.streak }} {{ 'gamification.streakDays' | translate }}</span>
+        </mat-list-item>
+      }
+    </mat-list>
+  </mat-card>
+</section>
+
+@if (missionInventoryOpen()) {
+  <mat-card class="panel inventory-panel">
+    <mat-card-header>
+      <mat-card-title>{{ 'gamification.missionInventory' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'gamification.missionInventorySubtitle' | translate }}</mat-card-subtitle>
+      <button mat-button type="button" (click)="closeMissionInventory()">{{ 'gamification.close' | translate }}</button>
+    </mat-card-header>
+    <mat-card-content class="mission-sections">
+      <section>
+        <h3>{{ 'gamification.activeMissions' | translate }}</h3>
+        <div class="mission-card-grid">
+          @for (mission of store.getMissionsByStatus('Activa'); track mission.id) {
+            <article class="mission-card mission-active">
+              <div class="mission-head">
+                <span>
+                  <strong>{{ mission.title }}</strong>
+                  <small>{{ mission.instructions }}</small>
+                </span>
+                <span class="chip chip-blue">{{ mission.cadence }}</span>
+              </div>
+              <mat-progress-bar mode="determinate" [value]="store.getMissionProgress(mission)" />
+              <small>{{ 'gamification.rewardLabel' | translate: { xp: mission.rewardXp, coins: mission.rewardCoins } }}</small>
+              @if (mission.unlockRequirement) {
+                <small>{{ 'gamification.requirementLabel' | translate: { req: mission.unlockRequirement } }}</small>
+              }
+            </article>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h3>{{ 'gamification.availableMissions' | translate }}</h3>
+        <div class="mission-card-grid">
+          @for (mission of store.getMissionsByStatus('Disponible'); track mission.id) {
+            <article class="mission-card mission-available">
+              <div class="mission-head">
+                <span>
+                  <strong>{{ mission.title }}</strong>
+                  <small>{{ mission.instructions }}</small>
+                </span>
+                <span class="chip chip-green">{{ mission.cadence }}</span>
+              </div>
+              <small>{{ 'gamification.rewardLabel' | translate: { xp: mission.rewardXp, coins: mission.rewardCoins } }}</small>
+              @if (mission.unlockRequirement) {
+                <small>{{ 'gamification.requirementLabel' | translate: { req: mission.unlockRequirement } }}</small>
+              }
+            </article>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h3>{{ 'gamification.lockedMissions' | translate }}</h3>
+        <div class="mission-card-grid">
+          @for (mission of store.getMissionsByStatus('Bloqueada'); track mission.id) {
+            <article class="mission-card mission-locked">
+              <div class="mission-head">
+                <span>
+                  <strong>{{ mission.title }}</strong>
+                  <small>{{ mission.instructions }}</small>
+                </span>
+                <span class="chip chip-gray">{{ 'gamification.blocked' | translate }}</span>
+              </div>
+              <small>{{ 'gamification.rewardLabel' | translate: { xp: mission.rewardXp, coins: mission.rewardCoins } }}</small>
+              @if (mission.unlockRequirement) {
+                <small>{{ 'gamification.requirementLabel' | translate: { req: mission.unlockRequirement } }}</small>
+              }
+            </article>
+          }
+        </div>
+      </section>
+    </mat-card-content>
+  </mat-card>
+}
+
+<mat-card class="panel">
+  <mat-card-header>
+    <mat-card-title>{{ 'gamification.badgesAndAchievements' | translate }}</mat-card-title>
+    <mat-card-subtitle>{{ 'gamification.unlockedAndPending' | translate }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content class="badge-grid">
+    @for (badge of store.getBadgePreview(5); track badge.id) {
+      <article class="badge-card" [class]="store.getBadgeRarityClass(badge)">
+        <mat-icon>workspace_premium</mat-icon>
+        <span class="chip">{{ badge.rarity }}</span>
+        <h4>{{ badge.name }}</h4>
+        <p>{{ badge.description }}</p>
+      </article>
+    }
+    <button mat-stroked-button type="button" class="panel-action badge-action" (click)="openBadgeInventory()">
+      <mat-icon>inventory_2</mat-icon>
+      {{ 'gamification.viewAllBadges' | translate }}
+    </button>
+  </mat-card-content>
+</mat-card>
+
+@if (badgeInventoryOpen()) {
+  <mat-card class="panel inventory-panel">
+    <mat-card-header>
+      <mat-card-title>{{ 'gamification.badgeInventory' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'gamification.badgeInventorySubtitle' | translate }}</mat-card-subtitle>
+      <button mat-button type="button" (click)="closeBadgeInventory()">{{ 'gamification.close' | translate }}</button>
+    </mat-card-header>
+    <mat-card-content class="badge-inventory">
+      <section>
+        <h3>{{ 'gamification.userBadges' | translate }}</h3>
+        <div class="badge-grid inventory-badge-grid">
+          @for (badge of store.getUnlockedBadges(); track badge.id) {
+            <article class="badge-card" [class]="store.getBadgeRarityClass(badge)">
+              <mat-icon>workspace_premium</mat-icon>
+              <span class="chip">{{ badge.rarity }}</span>
+              <h4>{{ badge.name }}</h4>
+              <p>{{ badge.description }}</p>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h3>{{ 'gamification.lockedBadges' | translate }}</h3>
+        <div class="badge-grid inventory-badge-grid">
+          @for (badge of store.getLockedBadges(); track badge.id) {
+            <article class="badge-card locked" [class]="store.getBadgeRarityClass(badge)">
+              <mat-icon>lock</mat-icon>
+              <span class="chip">{{ badge.rarity }}</span>
+              <h4>{{ badge.name }}</h4>
+              <p>{{ badge.description }}</p>
+              @if (badge.unlockRequirement) {
+                <small>{{ 'gamification.requirementLabel' | translate: { req: badge.unlockRequirement } }}</small>
+              }
+            </article>
+          }
+        </div>
+      </section>
+    </mat-card-content>
+  </mat-card>
+}
+
+<section class="content-grid extra-grid">
+  <mat-card class="panel coin-history-panel">
+    <mat-card-header>
+      <mat-card-title>{{ 'gamification.coinHistory' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'gamification.coinHistorySubtitle' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="coin-history">
+      @for (transaction of store.getRecentCoinTransactions(6); track transaction.id) {
+        <article class="coin-transaction">
+          <span>
+            <strong>{{ transaction.simulationTitle }}</strong>
+            <small>
+              {{ 'gamification.accuracyLabel' | translate: { accuracy: transaction.accuracy * 100, multiplier: transaction.multiplier } }}
+            </small>
+          </span>
+          <strong [class.empty-reward]="transaction.earnedCoins === 0">
+            +{{ transaction.earnedCoins }}
+          </strong>
+        </article>
+      } @empty {
+        <p>{{ 'gamification.noCoinRewards' | translate }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -1,0 +1,63 @@
+section {
+  padding: 24px;
+  max-width: var(--safe-max-width, 1440px);
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+mat-card {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.rating-cell mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--safe-border, #e0e0e0);
+}
+
+.rating-cell mat-icon.filled {
+  color: #fbc02d;
+}
+
+.mat-column-image {
+  width: 64px;
+}
+
+.mat-column-actions {
+  width: 120px;
+  text-align: right;
+}
+
+.low {
+  color: #e65100;
+  font-weight: 600;
+}
+
+.out {
+  color: #c62828;
+  font-weight: 600;
+}

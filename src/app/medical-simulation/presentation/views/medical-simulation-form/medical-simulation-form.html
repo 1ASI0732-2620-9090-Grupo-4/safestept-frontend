@@ -1,0 +1,66 @@
+<section class="form-page">
+  <h2>{{ isEdit ? ('admin.editSimulation' | translate) : ('admin.addSimulation' | translate) }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field>
+      <mat-label>{{ 'common.id' | translate }}</mat-label>
+      <input matInput formControlName="id" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'common.title' | translate }}</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'simulationForm.emergencyType' | translate }}</mat-label>
+      <input matInput formControlName="emergencyType" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'common.difficulty' | translate }}</mat-label>
+      <mat-select formControlName="difficulty">
+        <mat-option value="Basico">{{ 'simulationForm.basic' | translate }}</mat-option>
+        <mat-option value="Intermedio">{{ 'simulationForm.intermediate' | translate }}</mat-option>
+        <mat-option value="Avanzado">{{ 'simulationForm.advanced' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'simulationForm.durationMinutes' | translate }}</mat-label>
+      <input matInput type="number" formControlName="durationMinutes" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'simulationForm.xpReward' | translate }}</mat-label>
+      <input matInput type="number" formControlName="xpReward" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'simulationForm.coinReward' | translate }}</mat-label>
+      <input matInput type="number" formControlName="coinReward" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'common.progress' | translate }}</mat-label>
+      <input matInput type="number" formControlName="completion" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'common.status' | translate }}</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="Disponible">{{ 'simulationForm.available' | translate }}</mat-option>
+        <mat-option value="En progreso">{{ 'simulationForm.inProgress' | translate }}</mat-option>
+        <mat-option value="Completado">{{ 'simulationForm.completed' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>{{ 'common.imageUrl' | translate }}</mat-label>
+      <input matInput formControlName="imageUrl" />
+    </mat-form-field>
+    <mat-form-field class="wide">
+      <mat-label>{{ 'common.description' | translate }}</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    <mat-form-field class="wide">
+      <mat-label>{{ 'simulationForm.learningGoals' | translate }}</mat-label>
+      <input matInput formControlName="learningGoals" />
+    </mat-form-field>
+    <p class="note wide">{{ 'simulationForm.note' | translate }}</p>
+    <div class="actions">
+      <button mat-button type="button" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+      <button mat-flat-button color="primary" type="submit">{{ isEdit ? ('common.update' | translate) : ('common.add' | translate) }}</button>
+    </div>
+  </form>
+</section>

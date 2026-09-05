@@ -1,0 +1,65 @@
+<section>
+  <a routerLink="/app/store/admin/products" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'admin.back' | translate }}
+  </a>
+
+  <h1>{{ (editMode ? 'admin.products.edit' : 'admin.products.add') | translate }}</h1>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="model.id" [disabled]="editMode" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.name' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.name" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.category' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.category" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.price' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.price" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.oldPrice' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.oldPrice" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.stock' | translate }}</mat-label>
+          <input matInput type="number" [(ngModel)]="model.stock" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.imageUrl' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.imageUrl" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'admin.products.description' | translate }}</mat-label>
+          <textarea matInput [(ngModel)]="model.description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.products.tags' | translate }}</mat-label>
+          <input matInput [(ngModel)]="tagsString" placeholder="tag1, tag2, tag3" />
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="save()">
+        <mat-icon>save</mat-icon>
+        {{ 'admin.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</section>

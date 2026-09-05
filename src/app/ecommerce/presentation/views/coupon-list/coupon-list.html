@@ -1,0 +1,45 @@
+<section>
+  <header>
+    <h1>{{ 'admin.coupons.title' | translate }}</h1>
+    <a mat-raised-button color="primary" routerLink="/app/store/admin/coupons/new">
+      <mat-icon>add</mat-icon>
+      {{ 'admin.coupons.add' | translate }}
+    </a>
+  </header>
+
+  <mat-card>
+    <table mat-table [dataSource]="store.coupons()">
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.coupons.title' | translate }}</th>
+        <td mat-cell *matCellDef="let coupon">{{ coupon.title }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="discount">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.coupons.discount' | translate }}</th>
+        <td mat-cell *matCellDef="let coupon">
+          <mat-chip>{{ coupon.discount }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="costCoins">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.coupons.costCoins' | translate }}</th>
+        <td mat-cell *matCellDef="let coupon">{{ coupon.costCoins }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.actions' | translate }}</th>
+        <td mat-cell *matCellDef="let coupon">
+          <a mat-icon-button [routerLink]="'/app/store/admin/coupons/edit/' + coupon.id" matTooltip="{{ 'admin.edit' | translate }}">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button color="warn" (click)="store.deleteCoupon(coupon.id)" matTooltip="{{ 'admin.delete' | translate }}">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card>
+</section>

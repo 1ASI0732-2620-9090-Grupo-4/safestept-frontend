@@ -1,0 +1,500 @@
+<section class="store-container" *ngIf="currentStep() === 0 && !showHistory()">
+  <nav class="breadcrumb">
+    <a routerLink="/app/dashboard">{{ 'shared.home' | translate }}</a>
+    <span class="separator">/</span>
+    <span class="current">{{ 'store.title' | translate }}</span>
+  </nav>
+
+  <header class="store-header">
+    <h1>{{ 'store.title' | translate }}</h1>
+    <div class="store-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        class="orders-button"
+        [matBadge]="userOrders.length"
+        [matBadgeHidden]="userOrders.length === 0"
+        matBadgeColor="accent"
+        (click)="viewHistory()"
+      >
+        <mat-icon>receipt_long</mat-icon>
+        Mis ordenes
+      </button>
+      <button
+        mat-mini-fab
+        color="primary"
+        type="button"
+        [matBadge]="cartCount"
+        [matBadgeHidden]="cartCount === 0"
+        matBadgeColor="accent"
+        matTooltip="{{ 'store.cart' | translate }}"
+        aria-label="Abrir carrito"
+        (click)="openCart()"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+      <a mat-mini-fab routerLink="/app/store/admin/products" color="primary" matTooltip="{{ 'store.manageProducts' | translate }}" aria-label="Administrar productos">
+        <mat-icon>inventory_2</mat-icon>
+      </a>
+      <a mat-mini-fab routerLink="/app/store/admin/coupons" color="primary" matTooltip="{{ 'store.manageCoupons' | translate }}" aria-label="Administrar cupones">
+        <mat-icon>confirmation_number</mat-icon>
+      </a>
+    </div>
+  </header>
+
+  <div class="cart-modal-backdrop" *ngIf="cartOpen()" (click)="closeCart()">
+    <div class="cart-modal-card" role="dialog" aria-modal="true" aria-label="Carrito" (click)="$event.stopPropagation()">
+      <header class="cart-popover-header">
+        <div>
+          <h2>{{ 'store.cart' | translate }}</h2>
+          <span class="cart-count-pill">{{ cartCount }} productos</span>
+        </div>
+        <button mat-icon-button type="button" aria-label="Cerrar carrito" (click)="closeCart()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+      <mat-divider></mat-divider>
+      <div class="cart-items" *ngIf="cartLines.length > 0; else emptyCart">
+        <div class="cart-line" *ngFor="let line of cartLines">
+          <img [src]="line.product.imageUrl" [alt]="line.product.name" />
+          <div class="line-info">
+            <h4>{{ line.product.name }}</h4>
+            <div class="line-controls">
+              <button mat-icon-button (click)="updateQuantity(line.item.id, Math.max(1, line.item.quantity - 1))">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span>{{ line.item.quantity }}</span>
+              <button mat-icon-button (click)="updateQuantity(line.item.id, line.item.quantity + 1)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            <span class="line-subtotal">{{ formatPrice(line.subtotal) }}</span>
+          </div>
+          <button mat-icon-button color="warn" (click)="removeFromCart(line.item.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #emptyCart>
+        <div class="empty-cart">
+          <mat-icon>shopping_cart</mat-icon>
+          <p>{{ 'store.emptyCart' | translate }}</p>
+        </div>
+      </ng-template>
+      <mat-divider *ngIf="cartLines.length > 0"></mat-divider>
+      <div class="cart-summary" *ngIf="cartLines.length > 0">
+        <div class="total-row">
+          <span>{{ 'store.total' | translate }}</span>
+          <span class="total-value">{{ formatPrice(cartTotal) }}</span>
+        </div>
+        <button mat-raised-button color="accent" class="checkout-btn" (click)="checkout()">
+          {{ 'store.checkout' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ 'store.search' | translate }}</mat-label>
+      <input matInput [ngModel]="searchQuery" (ngModelChange)="onSearchChange($event)" placeholder="{{ 'store.searchPlaceholder' | translate }}" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="category-filters">
+    <mat-chip-set>
+      <mat-chip-option (click)="selectCategory('')" [selected]="selectedCategory === ''">
+        {{ 'store.all' | translate }}
+      </mat-chip-option>
+      <mat-chip-option *ngFor="let category of store.categories()" (click)="selectCategory(category.name)" [selected]="selectedCategory === category.name">
+        {{ category.name }}
+      </mat-chip-option>
+    </mat-chip-set>
+  </div>
+
+  <ng-container *ngIf="!selectedProductId; else productDetail">
+    <div class="product-grid" *ngIf="filteredProducts.length > 0; else noResults">
+      <mat-card class="product-card" *ngFor="let product of filteredProducts" (click)="viewProduct(product.id)">
+        <img mat-card-image [src]="product.imageUrl" [alt]="product.name" />
+        <mat-card-content>
+          <h3>{{ product.name }}</h3>
+          <p class="category-tag">{{ product.category }}</p>
+          <div class="price-row">
+            <span class="current-price">{{ formatPrice(product.price) }}</span>
+            <span class="old-price" *ngIf="product.oldPrice">{{ formatPrice(product.oldPrice) }}</span>
+          </div>
+          <div class="rating-row">
+            <mat-icon *ngFor="let star of [1,2,3,4,5]" [class.filled]="star <= product.rating">star</mat-icon>
+            <span class="stock-badge" [class.low]="product.stock < 10" [class.out]="product.stock === 0">
+              {{ product.stock > 0 ? (product.stock + ' ' + ('store.inStock' | translate)) : ('store.outOfStock' | translate) }}
+            </span>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="addToCart(product.id); $event.stopPropagation()" [disabled]="product.stock === 0">
+            <mat-icon>add_shopping_cart</mat-icon>
+            {{ 'store.addToCart' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card class="product-card kit-card" *ngFor="let kit of filteredKits" (click)="viewProduct(kit.id)">
+        <img mat-card-image [src]="kit.imageUrl" [alt]="kit.name" />
+        <mat-card-content>
+          <h3>{{ kit.name }}</h3>
+          <p class="category-tag">{{ 'store.emergencyKit' | translate }}</p>
+          <div class="price-row">
+            <span class="current-price">{{ formatPrice(kit.kitPrice) }}</span>
+            <span class="old-price">{{ formatPrice(kit.individualPrice) }}</span>
+          </div>
+          <p class="kit-description">{{ kit.description }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="addToCart(kit.id); $event.stopPropagation()">
+            <mat-icon>add_shopping_cart</mat-icon>
+            {{ 'store.addToCart' | translate }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <ng-template #noResults>
+      <div class="empty-state">
+        <mat-icon>search_off</mat-icon>
+        <p>{{ 'store.noResults' | translate }}</p>
+      </div>
+    </ng-template>
+  </ng-container>
+
+  <ng-template #productDetail>
+    <div class="product-detail" *ngIf="selectedProduct">
+      <button mat-stroked-button (click)="goBackToStore()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'store.back' | translate }}
+      </button>
+      <div class="detail-layout">
+        <div class="detail-gallery">
+          <img class="main-image" [src]="productImages[0]" [alt]="selectedProduct.name" />
+          <div class="thumbnail-row" *ngIf="productImages.length > 1">
+            <img *ngFor="let img of productImages" [src]="img" (click)="productImages[0] = img" />
+          </div>
+        </div>
+        <div class="detail-info">
+          <h2>{{ selectedProduct.name }}</h2>
+          <p class="category-tag">{{ selectedProduct.category }}</p>
+          <div class="price-row">
+            <span class="current-price">{{ formatPrice(selectedProduct.price) }}</span>
+            <span class="old-price" *ngIf="selectedProduct.oldPrice">{{ formatPrice(selectedProduct.oldPrice) }}</span>
+          </div>
+          <p class="description">{{ selectedProduct.description }}</p>
+          <div class="tags" *ngIf="selectedProduct.tags.length > 0">
+            <mat-chip *ngFor="let tag of selectedProduct.tags">{{ tag }}</mat-chip>
+          </div>
+          <button mat-raised-button color="primary" (click)="addToCart(selectedProduct.id)" [disabled]="selectedProduct.stock === 0">
+            <mat-icon>add_shopping_cart</mat-icon>
+            {{ 'store.addToCart' | translate }}
+          </button>
+        </div>
+      </div>
+      <div class="reviews-section" *ngIf="productReviews.length > 0">
+        <h3>{{ 'store.reviews' | translate }}</h3>
+        <mat-card class="review-card" *ngFor="let review of productReviews">
+          <div class="review-header">
+            <div class="review-rating">
+              <mat-icon *ngFor="let star of [1,2,3,4,5]" [class.filled]="star <= review.rating">star</mat-icon>
+            </div>
+            <span class="review-date">{{ review.createdAt | date }}</span>
+          </div>
+          <p>{{ review.comment }}</p>
+        </mat-card>
+      </div>
+    </div>
+  </ng-template>
+</section>
+
+<section class="history-container" *ngIf="showHistory()">
+  <button mat-stroked-button (click)="closeCheckout()">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'store.back' | translate }}
+  </button>
+  <h2>{{ 'store.historyTitle' | translate }}</h2>
+  <div *ngIf="userOrders.length === 0" class="empty-history">
+    <mat-icon>history</mat-icon>
+    <p>{{ 'store.noPurchases' | translate }}</p>
+  </div>
+  <div class="order-list" *ngIf="userOrders.length > 0">
+    <mat-card class="order-card" *ngFor="let order of userOrders">
+      <mat-card-header>
+        <mat-card-title>{{ 'store.orderLabel' | translate:{id: order.id, total: formatPrice(order.total)} }}</mat-card-title>
+        <mat-card-subtitle>{{ order.createdAt | date }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="order-line" *ngFor="let line of getOrderLines(order)">
+          <img [src]="line.product.imageUrl" [alt]="line.product.name" />
+          <div class="order-line-info">
+            <span class="line-name">{{ line.product.name }}</span>
+            <span class="line-qty">{{ line.quantity }} x {{ formatPrice(line.product.price) }}</span>
+          </div>
+          <span class="line-subtotal">{{ formatPrice(line.subtotal) }}</span>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <div class="order-total-row">
+        <span>{{ 'store.total' | translate }}</span>
+        <span class="total-value">{{ formatPrice(order.total) }}</span>
+      </div>
+    </mat-card>
+  </div>
+</section>
+
+<section class="checkout-container" *ngIf="currentStep() > 0">
+  <div class="checkout-header">
+    <button mat-icon-button (click)="closeCheckout()" aria-label="Close checkout">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="stepper">
+    <div class="step" [class.active]="currentStep() === 1" [class.completed]="currentStep() > 1">
+      <div class="step-circle">1</div>
+      <span class="step-label">{{ 'store.cart' | translate }}</span>
+    </div>
+    <div class="connector" [class.completed]="currentStep() > 1"></div>
+    <div class="step" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2">
+      <div class="step-circle">2</div>
+      <span class="step-label">{{ 'store.deliveryAddress' | translate }}</span>
+    </div>
+    <div class="connector" [class.completed]="currentStep() > 2"></div>
+    <div class="step" [class.active]="currentStep() === 3" [class.completed]="currentStep() > 3">
+      <div class="step-circle">3</div>
+      <span class="step-label">{{ 'store.paymentData' | translate }}</span>
+    </div>
+    <div class="connector" [class.completed]="currentStep() > 3"></div>
+    <div class="step" [class.active]="currentStep() === 4" [class.completed]="purchaseComplete">
+      <div class="step-circle">4</div>
+      <span class="step-label">{{ 'store.orderResume' | translate }}</span>
+    </div>
+  </div>
+
+  <div class="step-body">
+    <div class="step-pane" *ngIf="currentStep() === 1">
+      <h2>{{ 'store.cartTitle' | translate }}</h2>
+      <div class="checkout-cart-items" *ngIf="cartLines.length > 0; else emptyCartCheckout">
+        <div class="checkout-cart-line" *ngFor="let line of cartLines">
+          <img [src]="line.product.imageUrl" [alt]="line.product.name" />
+          <div class="checkout-line-info">
+            <h4>{{ line.product.name }}</h4>
+            <p>{{ line.item.quantity }} x {{ formatPrice(line.product.price) }}</p>
+          </div>
+          <span class="checkout-line-subtotal">{{ formatPrice(line.subtotal) }}</span>
+        </div>
+      </div>
+      <ng-template #emptyCartCheckout>
+        <div class="empty-cart">
+          <mat-icon>shopping_cart</mat-icon>
+          <p>{{ 'store.emptyCart' | translate }}</p>
+        </div>
+      </ng-template>
+      <mat-divider></mat-divider>
+      <div class="checkout-total">
+        <span>{{ 'store.total' | translate }}</span>
+        <span class="total-value">{{ formatPrice(cartTotal) }}</span>
+      </div>
+      <div class="step-nav">
+        <button mat-stroked-button (click)="closeCheckout()">{{ 'store.continueShopping' | translate }}</button>
+        <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="cartLines.length === 0">{{ 'store.next' | translate }}</button>
+      </div>
+    </div>
+
+    <div class="step-pane" *ngIf="currentStep() === 2">
+      <h2>{{ 'store.deliveryAddress' | translate }}</h2>
+
+      <div class="saved-addresses" *ngIf="store.shippingAddresses().length > 0">
+        <h3>{{ 'store.savedAddresses' | translate }}</h3>
+        <div class="address-cards">
+          <mat-card class="address-card" *ngFor="let addr of store.shippingAddresses()" [class.selected]="selectedAddressId === addr.id" (click)="selectAddress(addr)">
+            <mat-card-content>
+              <span class="address-badge" *ngIf="addr.label">{{ addr.label }}</span>
+              <p class="address-name">{{ addr.recipientName }}</p>
+              <p class="address-detail">{{ addr.city }}, {{ addr.district }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <button mat-stroked-button class="clear-address-btn" *ngIf="selectedAddressId" (click)="clearAddressSelection()">{{ 'store.newAddress' | translate }}</button>
+      </div>
+
+      <form [formGroup]="shippingForm" class="address-form">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'store.fullName' | translate }}</mat-label>
+          <input matInput formControlName="recipientName" placeholder="{{ 'store.fullNamePlaceholder' | translate }}" />
+          <mat-error *ngIf="shippingForm.get('recipientName')?.hasError('required')">{{ 'store.requiredField' | translate }}</mat-error>
+          <mat-error *ngIf="shippingForm.get('recipientName')?.hasError('minlength')">{{ 'store.minLength' | translate:{count: 3} }}</mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'store.city' | translate }}</mat-label>
+            <input matInput formControlName="city" placeholder="{{ 'store.cityPlaceholder' | translate }}" />
+            <mat-error *ngIf="shippingForm.get('city')?.hasError('required')">{{ 'store.requiredField' | translate }}</mat-error>
+            <mat-error *ngIf="shippingForm.get('city')?.hasError('minlength')">{{ 'store.minLength' | translate:{count: 2} }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'store.district' | translate }}</mat-label>
+            <input matInput formControlName="district" placeholder="{{ 'store.districtPlaceholder' | translate }}" />
+            <mat-error *ngIf="shippingForm.get('district')?.hasError('required')">{{ 'store.requiredField' | translate }}</mat-error>
+            <mat-error *ngIf="shippingForm.get('district')?.hasError('minlength')">{{ 'store.minLength' | translate:{count: 2} }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'store.addressLine' | translate }}</mat-label>
+          <input matInput formControlName="address" placeholder="{{ 'store.addressLinePlaceholder' | translate }}" />
+          <mat-error *ngIf="shippingForm.get('address')?.hasError('required')">{{ 'store.requiredField' | translate }}</mat-error>
+          <mat-error *ngIf="shippingForm.get('address')?.hasError('minlength')">{{ 'store.minLength' | translate:{count: 5} }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'store.addressLabel' | translate }}</mat-label>
+          <input matInput formControlName="label" placeholder="{{ 'store.addressLabelPlaceholder' | translate }}" />
+        </mat-form-field>
+      </form>
+
+      <div class="step-nav">
+        <button mat-stroked-button (click)="prevStep()">{{ 'store.back' | translate }}</button>
+        <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="!shippingForm.valid">{{ 'store.next' | translate }}</button>
+      </div>
+    </div>
+
+    <div class="step-pane" *ngIf="currentStep() === 3">
+      <h2>{{ 'store.paymentData' | translate }}</h2>
+
+      <div class="payment-section">
+        <h3>Stripe Checkout</h3>
+        <p class="payment-desc">Seras redirigido a Stripe para completar el pago de forma segura.</p>
+        <mat-radio-group class="payment-radio-group" [(ngModel)]="selectedPaymentMethodId" *ngIf="store.paymentMethods().length > 0">
+          <mat-radio-button *ngFor="let method of store.paymentMethods()" [value]="method.id" class="payment-radio">
+            <div class="payment-option">
+              <span class="payment-type">{{ method.label }}</span>
+              <span class="payment-desc">{{ method.description }}</span>
+              <span class="payment-fee" *ngIf="method.processingFee > 0">+ {{ formatPrice(method.processingFee) }}</span>
+            </div>
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="coupon-section">
+        <h3>{{ 'store.coupon' | translate }}</h3>
+        <div class="coupon-input" *ngIf="!store.appliedCoupon(); else appliedBlock">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'store.couponPlaceholder' | translate }}</mat-label>
+            <input matInput [(ngModel)]="couponCode" placeholder="SAVE10" />
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="applyCoupon()">{{ 'store.apply' | translate }}</button>
+        </div>
+        <p class="coupon-error" *ngIf="couponError">{{ 'store.couponInvalid' | translate }}</p>
+        <ng-template #appliedBlock>
+          <div class="applied-coupon">
+            <mat-icon class="applied-icon">check_circle</mat-icon>
+            <span>{{ 'store.couponApplied' | translate:{code: store.appliedCoupon()!.title} }}</span>
+            <button mat-icon-button color="warn" (click)="removeCoupon()" aria-label="Remove coupon">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="order-summary">
+        <h3>{{ 'store.orderSummary' | translate }}</h3>
+        <div class="summary-row">
+          <span>{{ 'store.subtotal' | translate }}</span>
+          <span>{{ formatPrice(cartTotal) }}</span>
+        </div>
+        <div class="summary-row" *ngIf="discountAmount > 0">
+          <span>{{ 'store.discount' | translate }}</span>
+          <span class="discount-value">-{{ formatPrice(discountAmount) }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="summary-row summary-total">
+          <span>{{ 'store.total' | translate }}</span>
+          <span class="total-value">{{ formatPrice(finalTotal) }}</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button mat-stroked-button (click)="prevStep()">{{ 'store.back' | translate }}</button>
+        <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="!canContinuePayment">{{ 'store.next' | translate }}</button>
+      </div>
+    </div>
+
+    <div class="step-pane" *ngIf="currentStep() === 4">
+      <ng-container *ngIf="!purchaseComplete; else purchaseSuccess">
+        <h2>{{ 'store.orderResume' | translate }}</h2>
+
+        <div class="review-section">
+          <h3>{{ 'store.orderSummary' | translate }}</h3>
+          <div class="checkout-cart-items" *ngIf="cartLines.length > 0">
+            <div class="checkout-cart-line" *ngFor="let line of cartLines">
+              <img [src]="line.product.imageUrl" [alt]="line.product.name" />
+              <div class="checkout-line-info">
+                <h4>{{ line.product.name }}</h4>
+                <p>{{ line.item.quantity }} x {{ formatPrice(line.product.price) }}</p>
+              </div>
+              <span class="checkout-line-subtotal">{{ formatPrice(line.subtotal) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-section" *ngIf="shippingForm.value.recipientName">
+          <h3>{{ 'store.deliveryAddress' | translate }}</h3>
+          <div class="review-block">
+            <p class="review-line"><strong>{{ shippingForm.value.recipientName }}</strong></p>
+            <p class="review-line">{{ shippingForm.value.address }}</p>
+            <p class="review-line">{{ shippingForm.value.city }}{{ shippingForm.value.district ? ', ' + shippingForm.value.district : '' }}</p>
+            <p class="review-line" *ngIf="shippingForm.value.label"><span class="review-badge">{{ shippingForm.value.label }}</span></p>
+          </div>
+        </div>
+
+        <div class="review-section">
+          <h3>{{ 'store.paymentData' | translate }}</h3>
+          <div class="review-block">
+            <p class="review-line"><strong>{{ selectedPaymentMethod?.label ?? 'Stripe Checkout' }}</strong></p>
+            <p class="review-line">{{ selectedPaymentMethod?.description ?? 'Pago seguro con tarjeta mediante Stripe.' }}</p>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+        <div class="summary-row">
+          <span>{{ 'store.subtotal' | translate }}</span>
+          <span>{{ formatPrice(cartTotal) }}</span>
+        </div>
+        <div class="summary-row" *ngIf="discountAmount > 0">
+          <span>{{ 'store.discount' | translate }}</span>
+          <span class="discount-value">-{{ formatPrice(discountAmount) }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="checkout-total">
+          <span>{{ 'store.total' | translate }}</span>
+          <span class="total-value">{{ formatPrice(finalTotal) }}</span>
+        </div>
+        <div class="step-nav">
+          <button mat-stroked-button (click)="prevStep()">{{ 'store.back' | translate }}</button>
+          <button mat-raised-button color="accent" (click)="confirmOrder()" [disabled]="processingPayment()">
+            {{ processingPayment() ? ('shared.loading' | translate) : ('store.pay' | translate) }}
+          </button>
+        </div>
+      </ng-container>
+      <ng-template #purchaseSuccess>
+        <div class="purchase-success">
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <h2>{{ 'store.purchaseSuccess' | translate }}</h2>
+          <p>{{ 'store.purchaseSuccessMessage' | translate }}</p>
+          <div class="success-actions">
+            <button mat-raised-button color="primary" (click)="closeCheckout()">{{ 'store.backToStore' | translate }}</button>
+            <button mat-stroked-button (click)="viewHistory()">{{ 'store.viewHistory' | translate }}</button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</section>

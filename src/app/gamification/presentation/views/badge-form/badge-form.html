@@ -1,0 +1,56 @@
+<section>
+  <a routerLink="/app/gamification/admin/badges" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'admin.back' | translate }}
+  </a>
+
+  <h1>{{ (editMode ? 'admin.badges.edit' : 'admin.badges.add') | translate }}</h1>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>ID</mat-label>
+          <input matInput [(ngModel)]="model.id" [disabled]="editMode" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.badges.name' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.name" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.badges.rarity' | translate }}</mat-label>
+          <mat-select [(ngModel)]="model.rarity">
+            <mat-option value="Comun">{{ 'admin.badges.common' | translate }}</mat-option>
+            <mat-option value="Rara">{{ 'admin.badges.rare' | translate }}</mat-option>
+            <mat-option value="Epica">{{ 'admin.badges.epic' | translate }}</mat-option>
+            <mat-option value="Legendaria">{{ 'admin.badges.legendary' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'admin.badges.description' | translate }}</mat-label>
+          <textarea matInput [(ngModel)]="model.description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.badges.unlockRequirement' | translate }}</mat-label>
+          <input matInput [(ngModel)]="model.unlockRequirement" />
+        </mat-form-field>
+      </div>
+
+      <div class="toggle-row">
+        <mat-slide-toggle [(ngModel)]="model.unlocked">
+          {{ 'admin.badges.unlocked' | translate }}
+        </mat-slide-toggle>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="save()">
+        <mat-icon>save</mat-icon>
+        {{ 'admin.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</section>

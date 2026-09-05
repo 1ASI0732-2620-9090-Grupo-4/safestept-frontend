@@ -1,0 +1,57 @@
+<section>
+  <header>
+    <h1>{{ 'admin.missions.title' | translate }}</h1>
+    <a mat-raised-button color="primary" routerLink="/app/gamification/admin/missions/new">
+      <mat-icon>add</mat-icon>
+      {{ 'admin.missions.add' | translate }}
+    </a>
+  </header>
+
+  <mat-card>
+    <table mat-table [dataSource]="store.missions()">
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.missions.title' | translate }}</th>
+        <td mat-cell *matCellDef="let mission">{{ mission.title }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cadence">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.missions.cadence' | translate }}</th>
+        <td mat-cell *matCellDef="let mission">
+          <mat-chip>{{ mission.cadence }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.missions.status' | translate }}</th>
+        <td mat-cell *matCellDef="let mission">
+          <mat-chip [color]="mission.status === 'Activa' ? 'primary' : 'warn'">{{ mission.status }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="progress">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.missions.progress' | translate }}</th>
+        <td mat-cell *matCellDef="let mission">{{ mission.progress }} / {{ mission.goal }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="reward">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.missions.reward' | translate }}</th>
+        <td mat-cell *matCellDef="let mission">{{ mission.rewardXp }} XP / {{ mission.rewardCoins }} Coins</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.actions' | translate }}</th>
+        <td mat-cell *matCellDef="let mission">
+          <a mat-icon-button [routerLink]="'/app/gamification/admin/missions/edit/' + mission.id" matTooltip="{{ 'admin.edit' | translate }}">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button color="warn" (click)="store.deleteMission(mission.id)" matTooltip="{{ 'admin.delete' | translate }}">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card>
+</section>

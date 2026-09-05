@@ -1,0 +1,93 @@
+<mat-sidenav-container class="app-frame">
+  <mat-sidenav
+    #drawer
+    class="sidebar"
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="!isMobile()"
+    [fixedInViewport]="isMobile()"
+  >
+    <a class="brand" routerLink="/app/dashboard" [attr.aria-label]="'shell.goToDashboard' | translate">
+      <img class="brand-logo" src="assets/images/design/safestep-logo.png" alt="SafeStep" />
+      <span>
+        <strong>{{ 'shell.safeStep' | translate }}</strong>
+        <small>{{ 'shell.appTagline' | translate }}</small>
+      </span>
+    </a>
+
+    <mat-nav-list [attr.aria-label]="'shell.mainNavigation' | translate">
+      @for (item of navItems; track item.path) {
+        <a
+          mat-list-item
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.path.endsWith('dashboard') }"
+          (click)="closeNavigation(drawer)"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label | translate }}</span>
+          @if (item.label === 'nav.store' && cartCount() > 0) {
+            <span matListItemMeta class="nav-badge">{{ cartCount() }}</span>
+          }
+        </a>
+      }
+    </mat-nav-list>
+
+    @if (user(); as currentUser) {
+    <mat-card class="sidebar-card" appearance="outlined">
+      <mat-card-content>
+          <div class="profile-mini">
+            <div class="profile-avatar">{{ currentUser.fullName.slice(0, 1) }}</div>
+            <div>
+              <p>{{ currentUser.fullName }}</p>
+              <small>{{ 'shell.level' | translate }} {{ currentUser.level }}</small>
+            </div>
+          </div>
+          <strong>{{ currentUser.xp }} XP</strong>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="(currentUser.xp / currentUser.nextLevelXp) * 100"
+          />
+          <small>{{ identityAccessStore.safeCoins() }} {{ 'shell.safeCoinsAvailable' | translate }}</small>
+        </mat-card-content>
+      </mat-card>
+    }
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content-area">
+    <mat-toolbar class="topbar">
+      <button mat-icon-button class="menu-button" type="button" [attr.aria-label]="'shell.openMenu' | translate" (click)="drawer.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div>
+        <h1>{{ 'shell.title' | translate }}</h1>
+        <p class="eyebrow">{{ 'shell.subtitle' | translate }}</p>
+      </div>
+      <span class="toolbar-spacer"></span>
+      <a mat-stroked-button class="coin-chip" routerLink="/app/store">
+        <mat-icon>paid</mat-icon>
+        {{ identityAccessStore.safeCoins() }} {{ 'shell.safeCoins' | translate }}
+      </a>
+      <app-language-switcher />
+      @if (user(); as currentUser) {
+        <a
+          mat-stroked-button
+          class="user-chip"
+          routerLink="/app/profile"
+          [matBadge]="currentUser.streakDays"
+          matBadgeColor="accent"
+          matBadgeOverlap="false"
+        >
+          <mat-icon>account_circle</mat-icon>
+          {{ currentUser.fullName }}
+        </a>
+      }
+      <button mat-icon-button type="button" aria-label="Cerrar sesion" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <main>
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
