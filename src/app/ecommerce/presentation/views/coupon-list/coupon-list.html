@@ -17,7 +17,10 @@
       <ng-container matColumnDef="discount">
         <th mat-header-cell *matHeaderCellDef>{{ 'admin.coupons.discount' | translate }}</th>
         <td mat-cell *matCellDef="let coupon">
-          <mat-chip>{{ coupon.discount }}</mat-chip>
+          <mat-chip>{{ coupon.discountPercentage }}%</mat-chip>
+          <span class="min-purchase" *ngIf="coupon.isMinPurchase">
+            {{ 'admin.coupons.minPurchaseCondition' | translate:{amount: coupon.minPurchaseAmount} }}
+          </span>
         </td>
       </ng-container>
 

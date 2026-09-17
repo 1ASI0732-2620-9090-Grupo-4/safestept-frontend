@@ -1,0 +1,68 @@
+<section>
+  <header>
+    <h1>{{ 'store.coupons.title' | translate }}</h1>
+    <div class="coins-badge">
+      <mat-icon>paid</mat-icon>
+      <span>{{ identityStore.safeCoins() }} {{ 'store.coupons.coins' | translate }}</span>
+    </div>
+  </header>
+
+  <p class="redeem-error" *ngIf="redeemError()">{{ redeemError() }}</p>
+
+  <h2>{{ 'store.coupons.available' | translate }}</h2>
+  <div class="coupon-grid">
+    <mat-card class="coupon-card" *ngFor="let coupon of store.coupons()">
+      <mat-card-content>
+        <h3>{{ coupon.title }}</h3>
+        <mat-chip class="discount-chip">{{ coupon.discountPercentage }}%</mat-chip>
+        <p class="coupon-condition" *ngIf="coupon.isMinPurchase">
+          {{ 'store.coupons.minPurchaseCondition' | translate:{amount: coupon.minPurchaseAmount} }}
+        </p>
+        <p class="coupon-cost">
+          <mat-icon>paid</mat-icon>
+          {{ coupon.costCoins }} {{ 'store.coupons.coins' | translate }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" [disabled]="!canAfford(coupon) || redeemingId() === coupon.id"
+            (click)="redeem(coupon)">
+          <mat-icon>redeem</mat-icon>
+          {{ (canAfford(coupon) ? 'store.coupons.redeem' : 'store.coupons.insufficientCoins') | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <h2>{{ 'store.coupons.mine' | translate }}</h2>
+  <mat-tab-group>
+    <mat-tab [label]="'store.coupons.availableMine' | translate">
+      <div class="coupon-grid" *ngIf="availableRedeemedCoupons.length > 0; else emptyAvailable">
+        <mat-card class="coupon-card redeemed" *ngFor="let coupon of availableRedeemedCoupons">
+          <mat-card-content>
+            <h3>{{ coupon.title }}</h3>
+            <mat-chip class="discount-chip">{{ coupon.discountPercentage }}%</mat-chip>
+            <p class="coupon-condition" *ngIf="coupon.isMinPurchase">
+              {{ 'store.coupons.minPurchaseCondition' | translate:{amount: coupon.minPurchaseAmount} }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <ng-template #emptyAvailable>
+        <p class="coupon-empty">{{ 'store.coupons.noneAvailable' | translate }}</p>
+      </ng-template>
+    </mat-tab>
+    <mat-tab [label]="'store.coupons.usedMine' | translate">
+      <div class="coupon-grid" *ngIf="usedRedeemedCoupons.length > 0; else emptyUsed">
+        <mat-card class="coupon-card used" *ngFor="let coupon of usedRedeemedCoupons">
+          <mat-card-content>
+            <h3>{{ coupon.title }}</h3>
+            <mat-chip class="discount-chip">{{ coupon.discountPercentage }}%</mat-chip>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <ng-template #emptyUsed>
+        <p class="coupon-empty">{{ 'store.coupons.noneUsed' | translate }}</p>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</section>

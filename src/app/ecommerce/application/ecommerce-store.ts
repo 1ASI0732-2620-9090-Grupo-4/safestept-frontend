@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, catchError, finalize, map, retry, switchMap, tap, throwError } from 'rxjs';
 import { StoreProduct } from '../domain/model/store-product.entity';
 import { Coupon } from '../domain/model/coupon.entity';
+import { RedeemedCoupon } from '../domain/model/redeemed-coupon.entity';
 import { ProductCategory } from '../domain/model/product-category.entity';
 import { ProductReview } from '../domain/model/product-review.entity';
 import { Order } from '../domain/model/order.entity';
@@ -12,6 +13,7 @@ import { PaymentMethod } from '../domain/model/payment-method.entity';
 import { PersonalizedRecommendation } from '../domain/model/personalized-recommendation.entity';
 import { EmergencyKit } from '../domain/model/emergency-kit.entity';
 import { EcommerceApi } from '../infrastructure/ecommerce-api';
+import { IdentityAccessStore } from '../../identity-access/application/identity-access-store';
 
 type CartLine = {
   item: CartItem;
@@ -39,7 +41,7 @@ export class EcommerceStore {
   private readonly emergencyKitsSignal = signal<EmergencyKit[]>([]);
   private readonly loadingSignal = signal<boolean>(false);
   private readonly errorSignal = signal<string | null>(null);
-  private readonly appliedCouponSignal = signal<Coupon | null>(null);
+  private readonly redeemedCouponsSignal = signal<RedeemedCoupon[]>([]);
 
   readonly products = this.productsSignal.asReadonly();
   readonly coupons = this.couponsSignal.asReadonly();
@@ -53,7 +55,7 @@ export class EcommerceStore {
   readonly emergencyKits = this.emergencyKitsSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
-  readonly appliedCoupon = this.appliedCouponSignal.asReadonly();
+  readonly redeemedCoupons = this.redeemedCouponsSignal.asReadonly();
 
   readonly productCount = computed(() => this.products().length);
   readonly orderCount = computed(() => this.orders().length);
@@ -61,6 +63,7 @@ export class EcommerceStore {
 
   constructor(
     private ecommerceApi: EcommerceApi,
+    private identityAccessStore: IdentityAccessStore,
     private destroyRef: DestroyRef,
   ) {
     this.loadProducts();
@@ -73,6 +76,7 @@ export class EcommerceStore {
     this.loadPaymentMethods();
     this.loadRecommendations();
     this.loadEmergencyKits();
+    this.loadMyRedeemedCoupons();
   }
 
   addProduct(product: StoreProduct): void {
@@ -173,35 +177,52 @@ export class EcommerceStore {
     return this.coupons().find((coupon) => coupon.id === id);
   }
 
-  getCouponByTitle(title: string): Coupon | undefined {
-    return this.coupons().find((c) => c.title.toLowerCase() === title.toLowerCase());
+  getRedeemedCouponById(id: string | null): RedeemedCoupon | undefined {
+    return this.redeemedCoupons().find((coupon) => coupon.id === id);
   }
 
-  applyCoupon(title: string): boolean {
-    const coupon = this.getCouponByTitle(title);
-    if (coupon) {
-      this.appliedCouponSignal.set(coupon);
-      return true;
-    }
-    return false;
+  getAvailableRedeemedCoupons(): RedeemedCoupon[] {
+    return this.redeemedCoupons().filter((coupon) => coupon.isAvailable);
   }
 
-  clearCoupon(): void {
-    this.appliedCouponSignal.set(null);
+  couponMeetsMinimumPurchase(coupon: RedeemedCoupon, total: number): boolean {
+    return !coupon.isMinPurchase || total >= (coupon.minPurchaseAmount ?? 0);
   }
 
-  calculateDiscount(total: number): number {
-    const coupon = this.appliedCouponSignal();
-    if (!coupon) {
+  calculateDiscountForCoupon(coupon: RedeemedCoupon | null, total: number): number {
+    if (!coupon || !this.couponMeetsMinimumPurchase(coupon, total)) {
       return 0;
     }
-    const discount = coupon.discount.trim();
-    if (discount.includes('%')) {
-      const pct = parseFloat(discount.replace('%', '').trim());
-      return total * (pct / 100);
-    }
-    const fixed = parseFloat(discount.replace(/[^0-9.]/g, ''));
-    return Math.min(fixed, total);
+    return total * (coupon.discountPercentage / 100);
+  }
+
+  redeemCoupon(couponId: string): Observable<RedeemedCoupon> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+    return this.ecommerceApi.redeemCoupon(couponId).pipe(
+      tap((redeemed) => {
+        this.redeemedCouponsSignal.update((list) => [redeemed, ...list]);
+        const coupon = this.getCouponById(couponId);
+        if (coupon) {
+          this.identityAccessStore.updateSafeCoinsLocally(
+            Math.max(0, this.identityAccessStore.safeCoins() - coupon.costCoins),
+          );
+        }
+        this.identityAccessStore.refreshGamificationSummary().subscribe();
+      }),
+      catchError((err) => {
+        this.errorSignal.set(this.formatError(err, 'Failed to redeem coupon'));
+        return throwError(() => err);
+      }),
+      finalize(() => this.loadingSignal.set(false)),
+    );
+  }
+
+  private loadMyRedeemedCoupons(): void {
+    this.ecommerceApi.getMyRedeemedCoupons().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (coupons) => this.redeemedCouponsSignal.set(coupons),
+      error: () => this.redeemedCouponsSignal.set([]),
+    });
   }
 
   addOrder(order: Order): void {
@@ -301,11 +322,16 @@ export class EcommerceStore {
     });
   }
 
-  checkoutWithStripe(): Observable<string> {
+  checkoutWithStripe(redeemedCouponExternalId?: string | null): Observable<string> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-    return this.ecommerceApi.createPendingOrder().pipe(
-      tap((order) => this.ordersSignal.update((list) => [order, ...list.filter((item) => item.id !== order.id)])),
+    return this.ecommerceApi.createPendingOrder(redeemedCouponExternalId).pipe(
+      tap((order) => {
+        this.ordersSignal.update((list) => [order, ...list.filter((item) => item.id !== order.id)]);
+        if (redeemedCouponExternalId) {
+          this.loadMyRedeemedCoupons();
+        }
+      }),
       switchMap((order) => this.ecommerceApi.createStripeCheckoutSession(order.id)),
       tap((session) => {
         window.location.href = session.sessionUrl;
@@ -340,6 +366,9 @@ export class EcommerceStore {
     this.ecommerceApi.cancelStripePayment(orderId, sessionId).pipe(retry(2)).subscribe({
       next: (updated) => {
         this.ordersSignal.update((list) => [updated, ...list.filter((order) => order.id !== updated.id)]);
+        if (updated.redeemedCouponExternalId) {
+          this.loadMyRedeemedCoupons();
+        }
         this.loadingSignal.set(false);
       },
       error: (err) => {

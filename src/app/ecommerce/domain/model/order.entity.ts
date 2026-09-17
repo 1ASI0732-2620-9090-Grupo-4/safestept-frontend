@@ -15,8 +15,11 @@ export class Order implements BaseEntity<string> {
   private _paymentStatus: string | null;
   private _stripeCheckoutSessionId: string | null;
   private _stripePaymentIntentId: string | null;
+  private _finalTotal: number;
+  private _appliedDiscountPercentage: number | null;
+  private _redeemedCouponExternalId: string | null;
 
-  constructor(order: { id: string; userId: string; total: number; status: string; items: string[]; createdAt: string; shippingAddressId?: number | null; paymentMethodId?: number | null; couponCode?: string; discountApplied?: number; paymentProvider?: string | null; paymentStatus?: string | null; stripeCheckoutSessionId?: string | null; stripePaymentIntentId?: string | null }) {
+  constructor(order: { id: string; userId: string; total: number; status: string; items: string[]; createdAt: string; shippingAddressId?: number | null; paymentMethodId?: number | null; couponCode?: string; discountApplied?: number; paymentProvider?: string | null; paymentStatus?: string | null; stripeCheckoutSessionId?: string | null; stripePaymentIntentId?: string | null; finalTotal?: number | null; appliedDiscountPercentage?: number | null; redeemedCouponExternalId?: string | null }) {
     this._id = order.id;
     this._userId = order.userId;
     this._total = order.total;
@@ -31,6 +34,9 @@ export class Order implements BaseEntity<string> {
     this._paymentStatus = order.paymentStatus ?? null;
     this._stripeCheckoutSessionId = order.stripeCheckoutSessionId ?? null;
     this._stripePaymentIntentId = order.stripePaymentIntentId ?? null;
+    this._finalTotal = order.finalTotal ?? order.total;
+    this._appliedDiscountPercentage = order.appliedDiscountPercentage ?? null;
+    this._redeemedCouponExternalId = order.redeemedCouponExternalId ?? null;
   }
 
   get id(): string { return this._id; }
@@ -61,4 +67,10 @@ export class Order implements BaseEntity<string> {
   set stripeCheckoutSessionId(value: string | null) { this._stripeCheckoutSessionId = value; }
   get stripePaymentIntentId(): string | null { return this._stripePaymentIntentId; }
   set stripePaymentIntentId(value: string | null) { this._stripePaymentIntentId = value; }
+  get finalTotal(): number { return this._finalTotal; }
+  set finalTotal(value: number) { this._finalTotal = value; }
+  get appliedDiscountPercentage(): number | null { return this._appliedDiscountPercentage; }
+  set appliedDiscountPercentage(value: number | null) { this._appliedDiscountPercentage = value; }
+  get redeemedCouponExternalId(): string | null { return this._redeemedCouponExternalId; }
+  set redeemedCouponExternalId(value: string | null) { this._redeemedCouponExternalId = value; }
 }

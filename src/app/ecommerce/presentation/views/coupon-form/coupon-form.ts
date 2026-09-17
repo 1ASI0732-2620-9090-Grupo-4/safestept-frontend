@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { EcommerceStore } from '../../../application/ecommerce-store';
 import { Coupon } from '../../../domain/model/coupon.entity';
@@ -25,6 +26,7 @@ import { Coupon } from '../../../domain/model/coupon.entity';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    MatSelectModule,
     RouterLink,
     TranslateModule,
   ],
@@ -32,7 +34,7 @@ import { Coupon } from '../../../domain/model/coupon.entity';
 export class CouponForm implements OnInit {
   editMode = false;
   couponId: string | null = null;
-  model = new Coupon({ id: '', title: '', costCoins: 0, discount: '' });
+  model = new Coupon({ id: '', title: '', costCoins: 0, type: 'PERCENTAGE_OFF', discountPercentage: 5, minPurchaseAmount: null });
 
   constructor(
     public store: EcommerceStore,
@@ -51,6 +53,12 @@ export class CouponForm implements OnInit {
         }
       }
     });
+  }
+
+  onTypeChange(): void {
+    if (!this.model.isMinPurchase) {
+      this.model.minPurchaseAmount = null;
+    }
   }
 
   save(): void {

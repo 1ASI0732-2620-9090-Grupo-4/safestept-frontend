@@ -20,6 +20,7 @@ export class IdentityAccessStore {
   readonly currentUser = this.currentProfileSignal.asReadonly();
   readonly authenticatedUser = this.authenticatedUserSignal.asReadonly();
   readonly isAuthenticated = computed(() => !!this.authenticatedUserSignal() && !!this.sessionStorage.getAccessToken());
+  readonly isAdmin = computed(() => this.authenticatedUserSignal()?.roles?.includes('ROLE_ADMIN') ?? false);
 
   readonly safeCoins = computed(() => this.getCurrentUser()?.safeCoins ?? 0);
 
@@ -212,7 +213,7 @@ export class IdentityAccessStore {
       id: profile.id.toString(),
       fullName: profile.fullName || this.authenticatedUserSignal()?.username || 'SafeStep User',
       email: profile.email || this.authenticatedUserSignal()?.username || '',
-      role: 'ROLE_USER',
+      role: this.authenticatedUserSignal()?.roles?.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : 'ROLE_USER',
       city: this.cityFromStreetAddress(profile.streetAddress),
       avatarUrl: '',
       level: current?.level ?? 1,
@@ -230,7 +231,7 @@ export class IdentityAccessStore {
       id: user.id.toString(),
       fullName: user.username,
       email: user.username,
-      role: 'ROLE_USER',
+      role: user.roles?.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : 'ROLE_USER',
       city: 'SafeStep',
       avatarUrl: '',
       level: 1,

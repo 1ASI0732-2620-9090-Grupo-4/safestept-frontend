@@ -1,0 +1,20 @@
+<section class="admin-dashboard">
+  <header>
+    <h1>{{ 'adminDashboard.title' | translate }}</h1>
+    <p>{{ 'adminDashboard.subtitle' | translate }}</p>
+  </header>
+
+  <div class="cards-grid">
+    @for (card of cards; track card.path) {
+      <a class="card-link" [routerLink]="card.path">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <mat-icon>{{ card.icon }}</mat-icon>
+            <strong class="count">{{ card.count() }}</strong>
+            <span>{{ card.labelKey | translate }}</span>
+          </mat-card-content>
+        </mat-card>
+      </a>
+    }
+  </div>
+</section>

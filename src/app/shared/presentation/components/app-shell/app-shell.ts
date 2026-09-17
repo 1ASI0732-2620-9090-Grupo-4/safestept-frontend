@@ -49,13 +49,18 @@ export class AppShell {
     return this.ecommerceStore.getCartItemCount(userCartItems);
   });
   protected readonly isMobile = signal(false);
-  protected readonly navItems = [
+  private readonly baseNavItems = [
     { label: 'nav.dashboard', path: '/app/dashboard', icon: 'dashboard' },
     { label: 'nav.simulations', path: '/app/simulations', icon: 'health_and_safety' },
     { label: 'nav.progress', path: '/app/statistics', icon: 'trending_up' },
     { label: 'nav.gamification', path: '/app/gamification', icon: 'emoji_events' },
     { label: 'nav.store', path: '/app/store', icon: 'shopping_bag' },
   ];
+  protected readonly navItems = computed(() =>
+    this.identityAccessStore.isAdmin()
+      ? [...this.baseNavItems, { label: 'nav.admin', path: '/app/admin', icon: 'admin_panel_settings' }]
+      : this.baseNavItems,
+  );
 
   constructor() {
     this.breakpointObserver

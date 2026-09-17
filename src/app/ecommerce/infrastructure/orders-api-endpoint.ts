@@ -26,8 +26,8 @@ export class OrdersApiEndpoint extends BaseApiEndpoint<Order, OrderResource, Ord
     );
   }
 
-  createPendingOrder(): Observable<Order> {
-    const payload: CreateOrderRequest = { status: 'PENDING' };
+  createPendingOrder(redeemedCouponExternalId?: string | null): Observable<Order> {
+    const payload: CreateOrderRequest = { status: 'PENDING', redeemedCouponExternalId: redeemedCouponExternalId ?? null };
     return this.http.post<OrderResource>(this.endpointUrl, payload).pipe(
       map((order) => this.assembler.toEntityFromResource(order)),
     );

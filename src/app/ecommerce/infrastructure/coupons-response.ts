@@ -7,5 +7,7 @@ export interface CouponsResponse extends BaseResponse {
 export interface CouponResource extends BaseResource<string> {
   title: string;
   costCoins: number;
-  discount: string;
+  type: string;
+  discountPercentage: number;
+  minPurchaseAmount?: number | null;
 }

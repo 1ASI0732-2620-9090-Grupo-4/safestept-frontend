@@ -66,8 +66,7 @@ export class StorePage implements OnInit {
   shippingForm: FormGroup;
   selectedPaymentMethodId: number | null = null;
   processingPayment = signal(false);
-  couponCode = '';
-  couponError = false;
+  selectedRedeemedCouponId: string | null = null;
 
   formatPrice = formatPrice;
 
@@ -163,8 +162,16 @@ export class StorePage implements OnInit {
     return this.store.paymentMethods().length === 0 || !!this.selectedPaymentMethodId;
   }
 
+  get availableRedeemedCoupons() {
+    return this.store.getAvailableRedeemedCoupons();
+  }
+
+  get selectedRedeemedCoupon() {
+    return this.store.getRedeemedCouponById(this.selectedRedeemedCouponId) ?? null;
+  }
+
   get discountAmount(): number {
-    return this.store.calculateDiscount(this.cartTotal);
+    return this.store.calculateDiscountForCoupon(this.selectedRedeemedCoupon, this.cartTotal);
   }
 
   get finalTotal(): number {
@@ -223,23 +230,6 @@ export class StorePage implements OnInit {
   clearAddressSelection(): void {
     this.selectedAddressId = null;
     this.shippingForm.reset();
-  }
-
-  applyCoupon(): void {
-    this.couponError = false;
-    if (!this.couponCode.trim()) {
-      return;
-    }
-    const success = this.store.applyCoupon(this.couponCode.trim());
-    if (!success) {
-      this.couponError = true;
-    }
-  }
-
-  removeCoupon(): void {
-    this.store.clearCoupon();
-    this.couponCode = '';
-    this.couponError = false;
   }
 
   openCart(): void {
@@ -302,8 +292,10 @@ export class StorePage implements OnInit {
     if (this.cartLines.length === 0) {
       return;
     }
+    const coupon = this.selectedRedeemedCoupon;
+    const couponId = coupon && this.store.couponMeetsMinimumPurchase(coupon, this.cartTotal) ? coupon.id : null;
     this.processingPayment.set(true);
-    this.store.checkoutWithStripe().subscribe({
+    this.store.checkoutWithStripe(couponId).subscribe({
       error: () => this.processingPayment.set(false),
     });
   }

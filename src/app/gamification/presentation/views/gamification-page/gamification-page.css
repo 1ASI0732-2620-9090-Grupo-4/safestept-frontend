@@ -145,6 +145,16 @@ h2 {
   font-weight: 900;
 }
 
+.reward-card-link {
+  cursor: pointer;
+}
+
+.reward-card-link small {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .content-grid {
   grid-template-columns: minmax(0, 1fr) minmax(340px, 0.82fr);
   margin-bottom: 20px;

@@ -21,10 +21,14 @@ export interface OrderResource extends BaseResource<string> {
   stripePaymentIntentId?: string | null;
   items: string[] | OrderItemResource[];
   createdAt: string;
+  finalTotal?: number | null;
+  appliedDiscountPercentage?: number | null;
+  redeemedCouponExternalId?: string | null;
 }
 
 export interface CreateOrderRequest {
   status: string;
+  redeemedCouponExternalId?: string | null;
 }
 
 export interface StripeCheckoutSessionResponse {

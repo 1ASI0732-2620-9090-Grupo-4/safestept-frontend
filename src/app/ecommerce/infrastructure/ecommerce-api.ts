@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { BaseApi } from '../../shared/infrastructure/base-api';
 import { StoreProductsApiEndpoint } from './store-products-api-endpoint';
 import { CouponsApiEndpoint } from './coupons-api-endpoint';
+import { RedeemedCouponsApiEndpoint } from './redeemed-coupons-api-endpoint';
 import { ProductCategoriesApiEndpoint } from './product-categories-api-endpoint';
 import { ProductReviewsApiEndpoint } from './product-reviews-api-endpoint';
 import { OrdersApiEndpoint } from './orders-api-endpoint';
@@ -14,6 +15,7 @@ import { PersonalizedRecommendationsApiEndpoint } from './personalized-recommend
 import { EmergencyKitsApiEndpoint } from './emergency-kits-api-endpoint';
 import { StoreProduct } from '../domain/model/store-product.entity';
 import { Coupon } from '../domain/model/coupon.entity';
+import { RedeemedCoupon } from '../domain/model/redeemed-coupon.entity';
 import { ProductCategory } from '../domain/model/product-category.entity';
 import { ProductReview } from '../domain/model/product-review.entity';
 import { Order } from '../domain/model/order.entity';
@@ -28,6 +30,7 @@ import { StripeCheckoutSessionResponse } from './orders-response';
 export class EcommerceApi extends BaseApi {
   private readonly storeProductsEndpoint: StoreProductsApiEndpoint;
   private readonly couponsEndpoint: CouponsApiEndpoint;
+  private readonly redeemedCouponsEndpoint: RedeemedCouponsApiEndpoint;
   private readonly productCategoriesEndpoint: ProductCategoriesApiEndpoint;
   private readonly productReviewsEndpoint: ProductReviewsApiEndpoint;
   private readonly ordersEndpoint: OrdersApiEndpoint;
@@ -41,6 +44,7 @@ export class EcommerceApi extends BaseApi {
     super();
     this.storeProductsEndpoint = new StoreProductsApiEndpoint(http);
     this.couponsEndpoint = new CouponsApiEndpoint(http);
+    this.redeemedCouponsEndpoint = new RedeemedCouponsApiEndpoint(http);
     this.productCategoriesEndpoint = new ProductCategoriesApiEndpoint(http);
     this.productReviewsEndpoint = new ProductReviewsApiEndpoint(http);
     this.ordersEndpoint = new OrdersApiEndpoint(http);
@@ -68,7 +72,9 @@ export class EcommerceApi extends BaseApi {
   updateCoupon(coupon: Coupon, id: string): Observable<Coupon> { return this.couponsEndpoint.update(coupon, id); }
   deleteCoupon(id: string): Observable<void> { return this.couponsEndpoint.delete(id); }
   createOrder(_order: Order): Observable<Order> { return this.ordersEndpoint.createPendingOrder(); }
-  createPendingOrder(): Observable<Order> { return this.ordersEndpoint.createPendingOrder(); }
+  createPendingOrder(redeemedCouponExternalId?: string | null): Observable<Order> { return this.ordersEndpoint.createPendingOrder(redeemedCouponExternalId); }
+  getMyRedeemedCoupons(): Observable<RedeemedCoupon[]> { return this.redeemedCouponsEndpoint.getMine(); }
+  redeemCoupon(couponId: string): Observable<RedeemedCoupon> { return this.redeemedCouponsEndpoint.redeem(couponId); }
   createStripeCheckoutSession(orderId: string): Observable<StripeCheckoutSessionResponse> { return this.ordersEndpoint.createStripeCheckoutSession(orderId); }
   confirmStripePayment(orderId: string, sessionId: string): Observable<Order> { return this.ordersEndpoint.confirmStripePayment(orderId, sessionId); }
   cancelStripePayment(orderId: string, sessionId: string | null): Observable<Order> { return this.ordersEndpoint.cancelStripePayment(orderId, sessionId); }

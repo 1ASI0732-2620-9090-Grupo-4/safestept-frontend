@@ -1,0 +1,34 @@
+<section>
+  <a routerLink="/app/users" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'admin.back' | translate }}
+  </a>
+
+  <h1>{{ 'admin.users.editRoles' | translate }} — {{ targetUser()?.username }}</h1>
+
+  <mat-card>
+    <mat-card-content>
+      @if (isEditingSelf()) {
+        <p class="hint">{{ 'admin.users.cannotEditOwnAdminRole' | translate }}</p>
+      }
+
+      <div class="roles-grid">
+        @for (role of availableRoles; track role) {
+          <mat-checkbox
+            [checked]="isSelected(role)"
+            [disabled]="isDisabled(role)"
+            (change)="toggle(role, $event.checked)"
+          >
+            {{ roleLabelKey(role) | translate }}
+          </mat-checkbox>
+        }
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="save()">
+        <mat-icon>save</mat-icon>
+        {{ 'admin.users.save' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</section>

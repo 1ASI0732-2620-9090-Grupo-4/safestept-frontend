@@ -1,0 +1,44 @@
+.admin-dashboard {
+  padding: 24px;
+  max-width: var(--safe-max-width, 1440px);
+  margin: 0 auto;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+header p {
+  margin: 0;
+  color: var(--text-secondary, #616161);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px;
+}
+
+.card-link .count {
+  font-size: 28px;
+  font-weight: 600;
+}

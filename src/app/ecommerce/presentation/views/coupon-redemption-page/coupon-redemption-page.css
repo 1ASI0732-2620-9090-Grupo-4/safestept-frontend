@@ -1,0 +1,65 @@
+section {
+  padding: 24px;
+  max-width: var(--safe-max-width, 1440px);
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.coins-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.redeem-error {
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.coupon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.coupon-card h3 {
+  margin: 0 0 8px;
+}
+
+.discount-chip {
+  margin-bottom: 8px;
+}
+
+.coupon-condition {
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.coupon-cost {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.coupon-card.used {
+  opacity: 0.6;
+}
+
+.coupon-empty {
+  padding: 16px 0;
+  opacity: 0.75;
+}

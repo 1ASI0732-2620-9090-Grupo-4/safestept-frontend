@@ -15,10 +15,12 @@
     <h2>{{ 'simulations.title' | translate }}</h2>
     <p>{{ 'simulations.description' | translate }}</p>
   </div>
-  <a mat-flat-button color="primary" routerLink="/app/simulations/admin">
-    <mat-icon>admin_panel_settings</mat-icon>
-    {{ 'admin.manageSimulations' | translate }}
-  </a>
+  @if (identityAccessStore.isAdmin()) {
+    <a mat-flat-button color="primary" routerLink="/app/simulations/admin">
+      <mat-icon>admin_panel_settings</mat-icon>
+      {{ 'admin.manageSimulations' | translate }}
+    </a>
+  }
 </section>
 
 <section class="filter-rail">

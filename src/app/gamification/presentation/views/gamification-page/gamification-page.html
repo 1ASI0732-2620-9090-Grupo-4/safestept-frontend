@@ -35,6 +35,7 @@
     <p>{{ currentUserXp }} / {{ nextLevelXp }} XP</p>
   </aside>
 
+  @if (identityStore.isAdmin()) {
   <div class="admin-actions">
     <a mat-mini-fab routerLink="/app/gamification/admin/missions" color="primary" matTooltip="{{ 'admin.missions.title' | translate }}">
       <mat-icon>flag</mat-icon>
@@ -43,6 +44,7 @@
       <mat-icon>workspace_premium</mat-icon>
     </a>
   </div>
+  }
 </section>
 
 <section class="reward-grid">
@@ -54,7 +56,7 @@
       <small>{{ 'gamification.dailyBonus' | translate }}</small>
     </mat-card-content>
   </mat-card>
-  <mat-card class="reward-card card-hover">
+  <mat-card class="reward-card card-hover reward-card-link" routerLink="/app/store/coupons" matTooltip="{{ 'gamification.redeemableCoupons' | translate }}">
     <mat-card-content>
       <mat-icon>paid</mat-icon>
       <span>{{ 'gamification.availableCoins' | translate }}</span>

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MedicalSimulationStore } from '../../../application/medical-simulation-store';
+import { IdentityAccessStore } from '../../../../identity-access/application/identity-access-store';
 
 @Component({
   selector: 'app-simulations-page',
@@ -22,6 +23,7 @@ import { MedicalSimulationStore } from '../../../application/medical-simulation-
 })
 export class SimulationsPage {
   protected readonly medicalSimulationStore = inject(MedicalSimulationStore);
+  protected readonly identityAccessStore = inject(IdentityAccessStore);
 
   protected readonly simulations = computed(() => this.medicalSimulationStore.simulations());
   protected readonly attempts = computed(() => this.medicalSimulationStore.attempts());

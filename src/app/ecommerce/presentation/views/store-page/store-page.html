@@ -33,10 +33,10 @@
       >
         <mat-icon>shopping_cart</mat-icon>
       </button>
-      <a mat-mini-fab routerLink="/app/store/admin/products" color="primary" matTooltip="{{ 'store.manageProducts' | translate }}" aria-label="Administrar productos">
+      <a *ngIf="identityStore.isAdmin()" mat-mini-fab routerLink="/app/store/admin/products" color="primary" matTooltip="{{ 'store.manageProducts' | translate }}" aria-label="Administrar productos">
         <mat-icon>inventory_2</mat-icon>
       </a>
-      <a mat-mini-fab routerLink="/app/store/admin/coupons" color="primary" matTooltip="{{ 'store.manageCoupons' | translate }}" aria-label="Administrar cupones">
+      <a *ngIf="identityStore.isAdmin()" mat-mini-fab routerLink="/app/store/admin/coupons" color="primary" matTooltip="{{ 'store.manageCoupons' | translate }}" aria-label="Administrar cupones">
         <mat-icon>confirmation_number</mat-icon>
       </a>
     </div>
@@ -385,22 +385,22 @@
 
       <div class="coupon-section">
         <h3>{{ 'store.coupon' | translate }}</h3>
-        <div class="coupon-input" *ngIf="!store.appliedCoupon(); else appliedBlock">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'store.couponPlaceholder' | translate }}</mat-label>
-            <input matInput [(ngModel)]="couponCode" placeholder="SAVE10" />
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="applyCoupon()">{{ 'store.apply' | translate }}</button>
-        </div>
-        <p class="coupon-error" *ngIf="couponError">{{ 'store.couponInvalid' | translate }}</p>
-        <ng-template #appliedBlock>
-          <div class="applied-coupon">
-            <mat-icon class="applied-icon">check_circle</mat-icon>
-            <span>{{ 'store.couponApplied' | translate:{code: store.appliedCoupon()!.title} }}</span>
-            <button mat-icon-button color="warn" (click)="removeCoupon()" aria-label="Remove coupon">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
+        <mat-form-field appearance="outline" *ngIf="availableRedeemedCoupons.length > 0; else noCouponsBlock">
+          <mat-label>{{ 'store.couponPlaceholder' | translate }}</mat-label>
+          <mat-select [(ngModel)]="selectedRedeemedCouponId">
+            <mat-option [value]="null">{{ 'store.noCoupon' | translate }}</mat-option>
+            <mat-option *ngFor="let coupon of availableRedeemedCoupons" [value]="coupon.id"
+                [disabled]="!store.couponMeetsMinimumPurchase(coupon, cartTotal)">
+              {{ coupon.title }} ({{ coupon.discountPercentage }}%)
+              <span *ngIf="coupon.isMinPurchase"> - {{ 'store.minPurchase' | translate:{amount: formatPrice(coupon.minPurchaseAmount ?? 0)} }}</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <ng-template #noCouponsBlock>
+          <p class="coupon-empty">
+            {{ 'store.noRedeemedCoupons' | translate }}
+            <a routerLink="/app/store/coupons">{{ 'store.goRedeemCoupons' | translate }}</a>
+          </p>
         </ng-template>
       </div>
 

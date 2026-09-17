@@ -20,8 +20,21 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>{{ 'admin.coupons.discount' | translate }}</mat-label>
-          <input matInput [(ngModel)]="model.discount" required />
+          <mat-label>{{ 'admin.coupons.type' | translate }}</mat-label>
+          <mat-select [(ngModel)]="model.type" (selectionChange)="onTypeChange()">
+            <mat-option value="PERCENTAGE_OFF">{{ 'admin.coupons.typePercentageOff' | translate }}</mat-option>
+            <mat-option value="PERCENTAGE_OFF_MIN_PURCHASE">{{ 'admin.coupons.typePercentageOffMinPurchase' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.coupons.discountPercentage' | translate }}</mat-label>
+          <input matInput type="number" min="1" max="100" [(ngModel)]="model.discountPercentage" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="model.isMinPurchase">
+          <mat-label>{{ 'admin.coupons.minPurchase' | translate }}</mat-label>
+          <input matInput type="number" min="0" step="0.01" [(ngModel)]="model.minPurchaseAmount" required />
         </mat-form-field>
 
         <mat-form-field appearance="outline">

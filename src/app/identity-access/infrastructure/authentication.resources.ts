@@ -13,6 +13,7 @@ export interface AuthenticatedUserResponse {
   username: string;
   token: string;
   refreshToken: string;
+  roles: string[];
 }
 
 export interface SignedUpUserResponse {

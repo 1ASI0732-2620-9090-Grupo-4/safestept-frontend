@@ -12,6 +12,9 @@ export class OrderAssembler implements BaseAssembler<Order, OrderResource, Order
       paymentStatus: resource.paymentStatus,
       stripeCheckoutSessionId: resource.stripeCheckoutSessionId,
       stripePaymentIntentId: resource.stripePaymentIntentId,
+      finalTotal: resource.finalTotal,
+      appliedDiscountPercentage: resource.appliedDiscountPercentage,
+      redeemedCouponExternalId: resource.redeemedCouponExternalId,
     });
   }
   toResourceFromEntity(entity: Order): OrderResource { return { id: entity.id, userId: entity.userId, total: entity.total, status: entity.status, items: [...entity.items], createdAt: entity.createdAt }; }
