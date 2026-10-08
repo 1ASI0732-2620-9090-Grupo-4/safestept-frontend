@@ -34,7 +34,7 @@ Add `-De2e.headless=false` to watch the browser. Reports are written to `target/
 | --- | --- | --- |
 | `authentication.feature` | US01, US02 | route protection, registration, password mismatch, sign-in, wrong password, sign-out |
 | `catalogs.feature` | US30, US31 | simulations catalogue, simulation filters, store catalogue |
-| `coupon-redemption.feature` | US40, US42 | a new player sees the coupons but cannot afford them |
-| `administration.feature` | admin dashboard | administrator reaches the panel, regular player is turned away |
+| `coupon-redemption.feature` | US42, US59 | a new player sees the coupons but cannot afford them |
+| `administration.feature` | US57, US58 | administrator reaches the panel, regular player is turned away |
 
 Every scenario registers its own player with a random e-mail, so the suite can run repeatedly on a persistent database.

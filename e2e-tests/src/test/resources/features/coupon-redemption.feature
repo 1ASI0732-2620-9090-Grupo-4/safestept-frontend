@@ -1,4 +1,4 @@
-@system @coupons @US40 @US42
+@system @coupons @US42 @US59
 Feature: Coupon redemption page
   As a player I want to see which coupons I can buy with SafeCoins
 
