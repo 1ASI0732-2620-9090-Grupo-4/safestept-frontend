@@ -1,4 +1,4 @@
-@system @administration
+@system @administration @US57 @US58
 Feature: Administration panel access
   Only administrators can reach the administration panel
 
