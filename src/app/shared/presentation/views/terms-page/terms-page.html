@@ -1,0 +1,154 @@
+<main class="terms">
+  <article class="terms-card">
+    <div class="terms-actions">
+      <a mat-stroked-button routerLink="/auth">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'terms.back' | translate }}
+      </a>
+    </div>
+
+    <h1>{{ 'terms.title' | translate }}</h1>
+    <p class="terms-meta"><strong>Versión del acuerdo:</strong> 1.0 · <strong>Fecha de redacción:</strong> 8 de octubre de 2026</p>
+    <p class="terms-note">{{ 'terms.languageNote' | translate }}</p>
+    <p>Este acuerdo establece los derechos, las obligaciones y las restricciones aplicables a las personas que usan la plataforma SafeStep, para que el uso del servicio sea transparente. Está redactado en lenguaje claro y describe el servicio tal como está implementado y desplegado, sin prometer capacidades que el producto no tiene. SafeStep se ofrece como <strong>piloto académico</strong> del curso Diseño de Experimentos de Ingeniería de Software de la UPC, desarrollado por el equipo Chronos; durante el piloto no se ofrecen planes comerciales.</p>
+
+    <h2>1. Resumen en lenguaje sencillo</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tema</th><th>Qué debe saber la persona usuaria</th></tr></thead>
+        <tbody>
+          <tr><td>Qué es SafeStep</td><td>Una plataforma educativa para practicar primeros auxilios con simulaciones, misiones, insignias y una tienda de productos de emergencia</td></tr>
+          <tr><td>Qué no es</td><td>No reemplaza una capacitación presencial, la atención de un profesional de la salud ni la llamada a los servicios de emergencia</td></tr>
+          <tr><td>Disponibilidad</td><td>Es un piloto: el servicio puede estar lento, suspendido o fuera de línea sin aviso previo</td></tr>
+          <tr><td>Cuenta</td><td>Es personal; la contraseña es responsabilidad de quien la crea</td></tr>
+          <tr><td>SafeCoins y cupones</td><td>No tienen valor en dinero, no se pueden transferir ni cambiar por efectivo</td></tr>
+          <tr><td>Pagos</td><td>Durante el piloto los pagos se procesan en el modo de prueba de Stripe: no se cobra dinero real</td></tr>
+          <tr><td>Datos personales</td><td>Se tratan según la Ley N.° 29733; se piden solo los datos necesarios para el servicio</td></tr>
+          <tr><td>Cambios</td><td>Este acuerdo puede actualizarse; la versión vigente es la publicada</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>2. Partes y objeto del acuerdo</h2>
+    <p>Este acuerdo se celebra entre el equipo <strong>Chronos</strong> (en adelante, «el Proveedor»), responsable del producto SafeStep en el marco del curso, y toda persona que se registra o usa la plataforma (en adelante, «el Usuario»). Su objeto es regular el acceso y el uso de los componentes del servicio:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Componente</th><th>Descripción</th><th>Dirección</th></tr></thead>
+        <tbody>
+          <tr><td>Landing Page</td><td>Presenta el producto y sus funciones</td><td>Publicada en GitHub Pages</td></tr>
+          <tr><td>Aplicación web</td><td>Aplicación Angular con simulaciones, progreso, gamificación, tienda y panel de administración</td><td><a href="https://safestept-frontend-experimentos.onrender.com" target="_blank" rel="noopener noreferrer">safestept-frontend-experimentos.onrender.com</a></td></tr>
+          <tr><td>API REST</td><td>Servicios que consume la aplicación web, documentados con OpenAPI</td><td><a href="https://safestept-backend-experimentos.onrender.com/swagger-ui/index.html" target="_blank" rel="noopener noreferrer">safestept-backend-experimentos.onrender.com/swagger-ui</a></td></tr>
+          <tr><td>Base de datos</td><td>PostgreSQL gestionada que guarda la información de la plataforma</td><td>No accesible públicamente</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Registrarse, iniciar sesión o usar la aplicación implica haber leído y aceptado este acuerdo. Quien no esté de acuerdo debe abstenerse de usar el servicio.</p>
+
+    <h2>3. Descripción y nivel de servicio</h2>
+    <p>El servicio se presta «tal como está», en modalidad de prueba, y <strong>no incluye un acuerdo de nivel de servicio (SLA) ni garantías de disponibilidad</strong>. Las condiciones reales de operación son las siguientes:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Aspecto</th><th>Condición actual</th></tr></thead>
+        <tbody>
+          <tr><td>Infraestructura</td><td>Servicios en el plan gratuito de Render (región Frankfurt, Unión Europea)</td></tr>
+          <tr><td>Suspensión por inactividad</td><td>El backend se suspende tras unos 15 minutos sin tráfico; la primera petición posterior tarda al menos 50 segundos y puede tardar varios minutos mientras la aplicación arranca</td></tr>
+          <tr><td>Base de datos</td><td>Plan gratuito con fecha de caducidad (7 de noviembre de 2026); pasada esa fecha los datos pueden eliminarse si no se migra a un plan de pago</td></tr>
+          <tr><td>Copias de seguridad</td><td>No se garantizan copias de seguridad de los datos</td></tr>
+          <tr><td>Mantenimiento</td><td>Puede interrumpirse el servicio para actualizar la aplicación o por mantenimiento de la plataforma de alojamiento, sin aviso previo</td></tr>
+          <tr><td>Soporte</td><td>Por el canal indicado en la sección 11, sin tiempos de respuesta garantizados</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>El Proveedor se esfuerza por mantener el servicio en funcionamiento durante los periodos de evaluación del curso, pero no responde por interrupciones, pérdidas de datos de prueba ni por la lentitud propia de la infraestructura gratuita.</p>
+
+    <h2>4. Cuentas, roles y acceso</h2>
+    <ul>
+      <li><strong>Registro.</strong> Cualquier persona puede crear una cuenta indicando un usuario o correo y una contraseña. El registro público siempre otorga el rol de jugador (<code>ROLE_USER</code>); no se pueden solicitar roles distintos al registrarse.</li>
+      <li><strong>Roles.</strong> Existen tres roles: jugador (<code>ROLE_USER</code>), instructor (<code>ROLE_INSTRUCTOR</code>) y administrador (<code>ROLE_ADMIN</code>). Solo un administrador puede cambiar los roles de otra persona; un administrador no puede quitarse a sí mismo el rol de administrador y el sistema siempre conserva al menos uno.</li>
+      <li><strong>Contraseña.</strong> Debe tener como mínimo 8 caracteres; la pantalla de registro recomienda además incluir una mayúscula, un número y un carácter especial. El sistema guarda las contraseñas cifradas con el algoritmo BCrypt y el Proveedor no puede ver la contraseña original.</li>
+      <li><strong>Sesión.</strong> Al iniciar sesión el sistema entrega un token firmado que vale 7 días y un token de renovación que vale 30 días. La aplicación web guarda esos datos en el almacenamiento local del navegador hasta que la persona cierra sesión.</li>
+      <li><strong>Responsabilidad.</strong> El Usuario es responsable de la actividad realizada con su cuenta, de mantener su contraseña en reserva y de avisar si sospecha un uso no autorizado. La cuenta es personal y no se puede ceder.</li>
+      <li><strong>Edad.</strong> Las personas menores de edad deben usar la plataforma con autorización y supervisión de su madre, padre o representante legal.</li>
+    </ul>
+
+    <h2>5. Derechos y obligaciones</h2>
+    <h3>Derechos del Usuario</h3>
+    <ol>
+      <li>Acceder a las funciones de la plataforma según su rol, de forma gratuita durante el piloto.</li>
+      <li>Conocer qué datos personales se tratan y para qué (ver sección 9) y ejercer sus derechos sobre ellos.</li>
+      <li>Dejar de usar el servicio en cualquier momento y solicitar la eliminación de su cuenta.</li>
+      <li>Recibir información clara sobre el contenido educativo y sus límites.</li>
+    </ol>
+    <h3>Obligaciones del Usuario</h3>
+    <ol>
+      <li>Proporcionar datos veraces y mantenerlos actualizados.</li>
+      <li>Usar la plataforma solo con fines lícitos y de aprendizaje, conforme a este acuerdo.</li>
+      <li>Respetar los derechos de las demás personas usuarias y del Proveedor.</li>
+      <li>No intentar acceder a cuentas, datos o funciones que no le corresponden.</li>
+    </ol>
+    <p><strong>Derechos del Proveedor:</strong> modificar, suspender o retirar funciones del servicio; desactivar cuentas que incumplan este acuerdo; y actualizar este acuerdo.</p>
+    <p><strong>Obligaciones del Proveedor:</strong> prestar el servicio con diligencia razonable dentro de las limitaciones del piloto, proteger los datos personales con medidas técnicas razonables y mantener informada a la persona usuaria sobre cambios relevantes.</p>
+
+    <h2>6. Uso aceptable y restricciones</h2>
+    <p>Queda prohibido:</p>
+    <ul>
+      <li>Intentar vulnerar la seguridad de la plataforma, sobrecargarla con peticiones automatizadas o explotar fallos para obtener ventajas (por ejemplo, manipular puntajes, SafeCoins o cupones).</li>
+      <li>Crear cuentas falsas o múltiples para acumular recompensas.</li>
+      <li>Publicar o transmitir contenido ilícito, ofensivo o que infrinja derechos de terceros.</li>
+      <li>Copiar, revender o explotar comercialmente el contenido de la plataforma fuera de lo que permite la licencia del código fuente.</li>
+      <li>Usar la plataforma como única fuente de decisión en una emergencia real.</li>
+    </ul>
+    <p>El incumplimiento puede dar lugar a la desactivación de la cuenta, que solo puede hacer un administrador.</p>
+
+    <h2>7. SafeCoins, cupones y compras</h2>
+    <ul>
+      <li><strong>SafeCoins.</strong> Son puntos virtuales que se ganan al completar simulaciones, según el puntaje y las repeticiones. <strong>No tienen valor monetario</strong>, no son transferibles y no se pueden canjear por dinero.</li>
+      <li><strong>Cupones.</strong> Se canjean con SafeCoins del catálogo definido por el administrador: hay cupones de descuento porcentual sobre toda la compra y cupones de descuento porcentual que exigen un monto mínimo de compra. Cada cupón canjeado es personal, de <strong>un solo uso</strong> y conserva las condiciones con las que se canjeó, aunque el catálogo cambie después. Si el pago falla o se cancela, el cupón vuelve a estar disponible.</li>
+      <li><strong>Saldo insuficiente.</strong> Si el saldo no alcanza, el canje se rechaza y el saldo no cambia.</li>
+      <li><strong>Compras.</strong> La tienda ofrece productos y kits de emergencia. El pago se realiza en la página de Stripe Checkout y SafeStep no almacena números de tarjeta. <strong>Durante el piloto, Stripe opera en modo de prueba: no se realizan cobros reales</strong> y, al tratarse de un piloto, no se despachan productos físicos.</li>
+      <li><strong>Cambios del catálogo.</strong> El Proveedor puede modificar precios, productos, cupones y recompensas en cualquier momento.</li>
+    </ul>
+
+    <h2>8. Contenido educativo y responsabilidad médica</h2>
+    <p>SafeStep es una herramienta educativa complementaria. Las simulaciones y los textos se elaboraron con fines de aprendizaje y <strong>no constituyen consejo médico, diagnóstico ni tratamiento</strong>. No sustituyen la capacitación práctica con profesionales acreditados, la evaluación de un profesional de la salud ni la comunicación con los servicios de emergencia. Ante una emergencia real, la persona debe llamar a los servicios de emergencia locales y seguir sus indicaciones. El Proveedor no responde por decisiones tomadas en una situación real con base solo en el contenido de la plataforma.</p>
+
+    <h2 id="privacidad">9. Privacidad y protección de datos personales</h2>
+    <p>El tratamiento de los datos personales se rige por la Ley N.° 29733, Ley de Protección de Datos Personales del Perú.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Aspecto</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td>Datos que se tratan</td><td>Usuario o correo, nombre y apellido, datos de contacto y dirección si la persona los registra, progreso (XP, nivel, racha), intentos de simulación y puntajes, movimientos de SafeCoins, cupones, carrito y órdenes, y registros técnicos del servidor</td></tr>
+          <tr><td>Finalidad</td><td>Crear y mantener la cuenta, mostrar el progreso, calcular recompensas, procesar compras de prueba, mantener la seguridad y evaluar el piloto académico</td></tr>
+          <tr><td>Base del tratamiento</td><td>Consentimiento otorgado al registrarse y al aceptar este acuerdo</td></tr>
+          <tr><td>Terceros</td><td>Render (alojamiento, Unión Europea) y Stripe (procesamiento de pagos); cada uno aplica sus propias políticas</td></tr>
+          <tr><td>Seguridad</td><td>Contraseñas cifradas con BCrypt, comunicación por HTTPS, acceso a la base de datos solo desde la red privada de la plataforma y control de acceso por roles</td></tr>
+          <tr><td>Conservación</td><td>Durante el piloto; los datos pueden eliminarse al terminar el periodo académico o cuando caduque la infraestructura gratuita</td></tr>
+          <tr><td>Derechos</td><td>La persona puede solicitar acceso, actualización, rectificación, supresión u oposición respecto de sus datos (derechos ARCO) mediante el canal de contacto</td></tr>
+          <tr><td>Transferencia</td><td>Los datos se alojan en servidores fuera del Perú (Frankfurt, Unión Europea)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>El Proveedor no vende los datos personales ni los usa para fines distintos de los indicados.</p>
+
+    <h2>10. Propiedad intelectual y limitación de responsabilidad</h2>
+    <p><strong>Propiedad intelectual.</strong> El código fuente del backend se publica bajo la licencia indicada en su repositorio (MIT); las bibliotecas de terceros conservan sus propias licencias. Los nombres, el logotipo y los textos de SafeStep pertenecen al equipo Chronos. El Usuario conserva los derechos sobre los datos que ingresa y otorga al Proveedor el permiso necesario para tratarlos con las finalidades de este acuerdo.</p>
+    <p><strong>Limitación de responsabilidad.</strong> En la medida permitida por la ley, el Proveedor no responde por daños indirectos, pérdida de datos, interrupciones del servicio, errores del contenido ni por el uso que se haga de la información de la plataforma. Esta limitación no afecta los derechos que la ley reconoce a las personas consumidoras ni la responsabilidad que no pueda excluirse legalmente.</p>
+    <p><strong>Suspensión y terminación.</strong> El Proveedor puede suspender o desactivar una cuenta que incumpla este acuerdo o ponga en riesgo la seguridad del servicio, y puede cerrar el piloto al terminar el curso. El Usuario puede dejar de usar la plataforma cuando quiera y solicitar la eliminación de su cuenta.</p>
+
+    <h2>11. Modificaciones, ley aplicable y contacto</h2>
+    <ul>
+      <li><strong>Modificaciones.</strong> El Proveedor puede actualizar este acuerdo; la versión vigente es la que figura publicada y el uso continuado del servicio después de un cambio implica su aceptación. Los cambios se registran en la tabla de versiones de esta página.</li>
+      <li><strong>Ley aplicable.</strong> El acuerdo se rige por las leyes de la República del Perú. Las controversias se resolverán ante los tribunales competentes del Perú.</li>
+      <li><strong>Contacto.</strong> Las consultas, solicitudes sobre datos personales y reportes de problemas se canalizan mediante la organización del equipo en GitHub: <a href="https://github.com/1ASI0732-2620-9090-Grupo-4" target="_blank" rel="noopener noreferrer">github.com/1ASI0732-2620-9090-Grupo-4</a>.</li>
+    </ul>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Versión</th><th>Fecha</th><th>Cambios</th></tr></thead>
+        <tbody>
+          <tr><td>1.0</td><td>8 de octubre de 2026</td><td>Redacción inicial del acuerdo para el piloto académico</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</main>
