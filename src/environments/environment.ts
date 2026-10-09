@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  platformProviderApiBaseUrl: 'https://safestep-backend-fxuw.onrender.com/api/v1',
+  platformProviderApiBaseUrl: 'https://safestept-backend-experimentos.onrender.com/api/v1',
   identityAccessEndpointPath: '',
   medicalSimulationsEndpointPath: '',
   gamificationEndpointPath: '/gamification',
