@@ -47,6 +47,11 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
     ],
   },
+  {
+    path: 'terms',
+    loadComponent: () => import('./shared/presentation/views/terms-page/terms-page').then((m) => m.TermsPage),
+    title: 'SafeStep - Terms',
+  },
   { path: '', pathMatch: 'full', redirectTo: 'auth' },
   { path: 'payment/success', pathMatch: 'full', redirectTo: 'app/payment/success' },
   { path: 'payment/cancel', pathMatch: 'full', redirectTo: 'app/payment/cancel' },

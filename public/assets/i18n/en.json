@@ -521,6 +521,13 @@
   "badgeForm": {
     "description": "Description"
   },
+  "terms": {
+    "title": "Terms and Conditions",
+    "back": "Back to sign in",
+    "languageNote": "This agreement is written in Spanish.",
+    "consent": "By creating your account you accept the",
+    "link": "Terms and Conditions"
+  },
   "auth": {
     "eyebrow": "Identity and access",
     "title": "Enter your first aid training.",

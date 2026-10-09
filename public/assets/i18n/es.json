@@ -521,6 +521,13 @@
   "badgeForm": {
     "description": "Descripcion"
   },
+  "terms": {
+    "title": "Términos y Condiciones",
+    "back": "Volver al acceso",
+    "languageNote": "Este acuerdo está redactado en español.",
+    "consent": "Al crear tu cuenta aceptas los",
+    "link": "Términos y Condiciones"
+  },
   "auth": {
     "eyebrow": "Identidad y acceso",
     "title": "Entra a tu entrenamiento de primeros auxilios.",
