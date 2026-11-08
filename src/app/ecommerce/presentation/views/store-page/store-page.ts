@@ -183,11 +183,11 @@ export class StorePage implements OnInit {
   }
 
   viewProduct(productId: string): void {
-    this.router.navigate(['/app/store/products', productId]);
+    void this.router.navigate(['/app/store/products', productId]);
   }
 
   goBackToStore(): void {
-    this.router.navigate(['/app/store']);
+    void this.router.navigate(['/app/store']);
   }
 
   addToCart(productId: string): void {
@@ -271,7 +271,7 @@ export class StorePage implements OnInit {
     this.purchaseComplete = false;
     this.store.refreshOrders();
     if (updateUrl) {
-      this.router.navigate(['/app/store'], { queryParams: { history: true } });
+      void this.router.navigate(['/app/store'], { queryParams: { history: true } });
     }
   }
 
@@ -280,7 +280,7 @@ export class StorePage implements OnInit {
     this.purchaseComplete = false;
     this.showHistory.set(false);
     if (this.route.snapshot.queryParamMap.has('history')) {
-      this.router.navigate(['/app/store'], { replaceUrl: true });
+      void this.router.navigate(['/app/store'], { replaceUrl: true });
     }
   }
 

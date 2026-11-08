@@ -92,6 +92,6 @@ export class UserRolesForm implements OnInit {
     const id = this.userId();
     if (id === null) return;
     this.store.updateUserRoles(id, this.selectedRoles());
-    this.router.navigate(['/app/users']);
+    void this.router.navigate(['/app/users']);
   }
 }

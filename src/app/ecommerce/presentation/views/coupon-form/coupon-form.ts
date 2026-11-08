@@ -71,6 +71,6 @@ export class CouponForm implements OnInit {
     } else {
       this.store.addCoupon(this.model);
     }
-    this.router.navigate(['/app/store/admin/coupons']);
+    void this.router.navigate(['/app/store/admin/coupons']);
   }
 }

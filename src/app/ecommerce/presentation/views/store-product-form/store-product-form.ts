@@ -88,6 +88,6 @@ export class StoreProductForm implements OnInit {
     } else {
       this.store.addProduct(this.model);
     }
-    this.router.navigate(['/app/store/admin/products']);
+    void this.router.navigate(['/app/store/admin/products']);
   }
 }

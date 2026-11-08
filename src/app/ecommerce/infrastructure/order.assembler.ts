@@ -22,6 +22,6 @@ export class OrderAssembler implements BaseAssembler<Order, OrderResource, Order
   private toProductIds(items: string[] | OrderItemResource[]): string[] {
     if (items.length === 0) return [];
     if (typeof items[0] === 'string') return [...items] as string[];
-    return (items as OrderItemResource[]).flatMap((item) => Array(item.quantity).fill(item.productId));
+    return (items as OrderItemResource[]).flatMap((item) => new Array(item.quantity).fill(item.productId));
   }
 }

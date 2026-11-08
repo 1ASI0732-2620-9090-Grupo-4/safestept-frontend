@@ -73,6 +73,6 @@ export class BadgeForm implements OnInit {
     } else {
       this.store.addBadge(this.model);
     }
-    this.router.navigate(['/app/gamification/admin/badges']);
+    void this.router.navigate(['/app/gamification/admin/badges']);
   }
 }

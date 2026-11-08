@@ -74,6 +74,6 @@ export class MissionForm implements OnInit {
     } else {
       this.store.addMission(this.model);
     }
-    this.router.navigate(['/app/gamification/admin/missions']);
+    void this.router.navigate(['/app/gamification/admin/missions']);
   }
 }
