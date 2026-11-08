@@ -75,6 +75,17 @@ public class AuthenticationSteps {
     authPage.signIn(player.email(), "WrongPass999!");
   }
 
+  @When("the administrator signs in")
+  public void theAdministratorSignsIn() {
+    authPage.signIn(E2eConfig.adminUsername(), E2eConfig.adminPassword());
+    browser.waitVisible(AppShellPage.DASHBOARD_HERO);
+  }
+
+  @When("the administrator signs out")
+  public void theAdministratorSignsOut() {
+    shell.signOut();
+  }
+
   @When("the player signs out")
   public void thePlayerSignsOut() {
     shell.signOut();

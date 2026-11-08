@@ -14,6 +14,7 @@ public final class CatalogPages {
   public static final By COINS_BADGE = By.cssSelector(".coins-badge span");
   public static final By REDEEMABLE_COUPON = By.cssSelector("section > .coupon-grid .coupon-card");
   public static final By REDEEM_BUTTON = By.cssSelector("section > .coupon-grid .coupon-card mat-card-actions button");
+  public static final By REDEEM_BUTTON_IN_CARD = By.cssSelector("mat-card-actions button");
   public static final By REDEEMED_EMPTY_MESSAGE = By.cssSelector("mat-tab-body .coupon-empty");
 
   public static final By ADMIN_CARD = By.cssSelector(".admin-dashboard .card-link");

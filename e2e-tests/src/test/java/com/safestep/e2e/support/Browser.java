@@ -3,6 +3,8 @@ package com.safestep.e2e.support;
 import java.time.Duration;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -46,6 +48,18 @@ public class Browser {
 
   public List<WebElement> waitAll(By locator) {
     return explicitWait().until(ExpectedConditions.numberOfElementsToBeMoreThan(locator, 0));
+  }
+
+  /** Scrolls the element to the middle of the viewport so that no sticky bar covers it, then clicks it. */
+  public void click(WebElement element) {
+    ((JavascriptExecutor) driver()).executeScript(
+        "arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});", element);
+    try {
+      element.click();
+    } catch (ElementClickInterceptedException coveredByAnimation) {
+      // A smooth-scrolling container may still be moving; the script click does not depend on the position.
+      ((JavascriptExecutor) driver()).executeScript("arguments[0].click();", element);
+    }
   }
 
   public boolean isPresent(By locator) {
