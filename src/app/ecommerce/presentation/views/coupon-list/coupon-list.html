@@ -10,7 +10,7 @@
   <mat-card>
     <table mat-table [dataSource]="store.coupons()">
       <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef>{{ 'admin.coupons.title' | translate }}</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'admin.coupons.couponTitle' | translate }}</th>
         <td mat-cell *matCellDef="let coupon">{{ coupon.title }}</td>
       </ng-container>
 

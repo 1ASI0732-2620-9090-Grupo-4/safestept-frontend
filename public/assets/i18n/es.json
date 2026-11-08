@@ -154,7 +154,7 @@
       "validFrom": "Valido desde",
       "validTo": "Valido hasta",
       "costCoins": "Costo en monedas",
-      "title": "Titulo",
+      "couponTitle": "Titulo",
       "percentage": "Porcentaje",
       "fixed": "Monto fijo"
     },
